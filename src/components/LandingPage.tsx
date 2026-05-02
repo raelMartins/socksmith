@@ -3,7 +3,6 @@
 import {
   Badge,
   Box,
-  Button,
   Container,
   Flex,
   Heading,
@@ -13,7 +12,6 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { SockHeroCanvas } from "./SockHeroCanvas";
 import { ThemeToggle } from "./ThemeToggle";
@@ -61,16 +59,6 @@ export function LandingPage() {
             </HStack>
             <HStack spacing={2}>
               <ThemeToggle />
-              <Button
-                as={Link}
-                href="/admin/login"
-                size="sm"
-                variant="ghost"
-                borderRadius="full"
-                fontWeight="600"
-              >
-                Admin
-              </Button>
             </HStack>
           </Flex>
         </Container>
