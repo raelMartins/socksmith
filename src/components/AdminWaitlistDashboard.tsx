@@ -1,10 +1,16 @@
 "use client";
 
 import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Badge,
   Box,
   Button,
   Container,
+  Grid,
   Heading,
   HStack,
   Input,
@@ -14,19 +20,13 @@ import {
   Spinner,
   Stack,
   Tab,
-  Table,
-  TableContainer,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
+  VStack,
   Link,
-  Tr,
   useToast,
   Wrap,
   WrapItem,
@@ -45,6 +45,7 @@ import {
 } from "@/lib/waitlist-options";
 import type { WaitlistRow } from "@/types/waitlist";
 import { BRAND } from "@/lib/brand";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type SortKey =
   | "created_at"
@@ -214,9 +215,17 @@ function normalizeStatus(s: string | undefined | null): WaitlistStatus {
     : "waiting";
 }
 
+/** Desktop waitlist row + header column template */
+const WAITLIST_DESKTOP_COLS =
+  "36px minmax(100px,1fr) minmax(88px,0.85fr) minmax(140px,1.15fr) minmax(96px,0.75fr) minmax(128px,1fr) minmax(120px,0.95fr)";
+
 export function AdminWaitlistDashboard() {
   const router = useRouter();
   const toast = useToast();
+  const pageBg = useColorModeValue("socksmith.cream", "gray.950");
+  const headerBarBg = useColorModeValue("blackAlpha.50", "whiteAlpha.80");
+  const expandPanelBg = useColorModeValue("blackAlpha.40", "whiteAlpha.70");
+  const rowHoverBg = useColorModeValue("blackAlpha.35", "whiteAlpha.60");
   const [rows, setRows] = useState<WaitlistRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -364,7 +373,7 @@ export function AdminWaitlistDashboard() {
   }, [rows]);
 
   return (
-    <Box minH="100vh" py={{ base: 8, md: 12 }}>
+    <Box minH="100vh" py={{ base: 8, md: 12 }} bg={pageBg} transition="background 0.2s ease">
       <Container maxW="container.xl">
         <Stack spacing={8}>
           <HStack
@@ -377,7 +386,7 @@ export function AdminWaitlistDashboard() {
               <Badge colorScheme="brand" borderRadius="full" px={3} py={1} mb={2} variant="subtle">
                 Internal
               </Badge>
-              <Heading size="lg" letterSpacing="-0.03em">
+              <Heading size="lg" letterSpacing="-0.03em" color="app.fg">
                 Waitlist CRM
               </Heading>
               <Text color="app.muted" mt={2} fontSize="sm">
@@ -385,6 +394,7 @@ export function AdminWaitlistDashboard() {
               </Text>
             </Box>
             <HStack flexWrap="wrap">
+              <ThemeToggle />
               <Button as={NextLink} href="/" variant="outline" borderRadius="xl">
                 View site
               </Button>
@@ -479,70 +489,260 @@ export function AdminWaitlistDashboard() {
                       backdropFilter="blur(12px)"
                       overflow="hidden"
                     >
-                      <TableContainer overflowX="auto">
-                        <Table size="sm" variant="simple">
-                          <Thead bg="socksmith.black" color="socksmith.white">
-                            <Tr>
-                              <Th w="40px">#</Th>
-                              <Th cursor="pointer" onClick={() => toggleSort("full_name")}>
-                                Name{sortIndicator("full_name")}
-                              </Th>
-                              <Th display={{ base: "none", md: "table-cell" }}>Phone</Th>
-                              <Th cursor="pointer" onClick={() => toggleSort("email")}>
-                                Email{sortIndicator("email")}
-                              </Th>
-                              <Th
-                                display={{ base: "none", lg: "table-cell" }}
-                                cursor="pointer"
-                                onClick={() => toggleSort("hear_about_us")}
-                              >
-                                Heard via{sortIndicator("hear_about_us")}
-                              </Th>
-                              <Th display={{ base: "none", xl: "table-cell" }}>Interests</Th>
-                              <Th display={{ base: "none", "2xl": "table-cell" }}>Size · focus</Th>
-                              <Th cursor="pointer" onClick={() => toggleSort("status")}>
-                                Status{sortIndicator("status")}
-                              </Th>
-                              <Th
-                                display={{ base: "none", md: "table-cell" }}
-                                cursor="pointer"
-                                onClick={() => toggleSort("created_at")}
-                              >
-                                Joined{sortIndicator("created_at")}
-                              </Th>
-                              <Th display={{ base: "none", lg: "table-cell" }}>Note</Th>
-                            </Tr>
-                          </Thead>
-                          <Tbody>
-                            {filteredSorted.length === 0 ? (
-                              <Tr>
-                                <Td colSpan={10} textAlign="center" py={12} color="app.muted">
-                                  No entries match your filters.
-                                </Td>
-                              </Tr>
-                            ) : (
-                              filteredSorted.map((r, i) => {
-                                const st = normalizeStatus(r.status);
-                                const stStyle = STATUS_STYLE[st];
-                                return (
-                                  <Tr key={r.id}>
-                                    <Td color="app.muted" fontWeight="700">
-                                      {i + 1}
-                                    </Td>
-                                    <Td fontWeight="700">{r.full_name}</Td>
-                                    <Td display={{ base: "none", md: "table-cell" }}>
+                      <Text
+                        display={{ base: "block", md: "none" }}
+                        px={4}
+                        py={2}
+                        fontSize="xs"
+                        color="app.muted"
+                        borderBottomWidth="1px"
+                        borderColor="glass.border"
+                      >
+                        Tap a row to see interests, size, first-drop focus, and notes.
+                      </Text>
+                      <Grid
+                        display={{ base: "none", md: "grid" }}
+                        templateColumns={WAITLIST_DESKTOP_COLS}
+                        gap={3}
+                        alignItems="center"
+                        px={4}
+                        py={3}
+                        bg={headerBarBg}
+                        borderBottomWidth="1px"
+                        borderColor="glass.border"
+                        color="app.fg"
+                        fontSize="10px"
+                        fontWeight="800"
+                        letterSpacing="0.08em"
+                        textTransform="uppercase"
+                      >
+                        <Text>#</Text>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          h="auto"
+                          minH={0}
+                          p={0}
+                          fontSize="10px"
+                          fontWeight="800"
+                          letterSpacing="0.08em"
+                          textTransform="uppercase"
+                          justifyContent="flex-start"
+                          color="inherit"
+                          _hover={{ bg: "transparent", color: "brand.500" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleSort("full_name");
+                          }}
+                        >
+                          Name{sortIndicator("full_name")}
+                        </Button>
+                        <Text>Phone</Text>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          h="auto"
+                          minH={0}
+                          p={0}
+                          fontSize="10px"
+                          fontWeight="800"
+                          letterSpacing="0.08em"
+                          textTransform="uppercase"
+                          justifyContent="flex-start"
+                          color="inherit"
+                          _hover={{ bg: "transparent", color: "brand.500" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleSort("email");
+                          }}
+                        >
+                          Email{sortIndicator("email")}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          h="auto"
+                          minH={0}
+                          p={0}
+                          fontSize="10px"
+                          fontWeight="800"
+                          letterSpacing="0.08em"
+                          textTransform="uppercase"
+                          justifyContent="flex-start"
+                          color="inherit"
+                          _hover={{ bg: "transparent", color: "brand.500" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleSort("hear_about_us");
+                          }}
+                        >
+                          Heard{sortIndicator("hear_about_us")}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          h="auto"
+                          minH={0}
+                          p={0}
+                          fontSize="10px"
+                          fontWeight="800"
+                          letterSpacing="0.08em"
+                          textTransform="uppercase"
+                          justifyContent="flex-start"
+                          color="inherit"
+                          _hover={{ bg: "transparent", color: "brand.500" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleSort("status");
+                          }}
+                        >
+                          Status{sortIndicator("status")}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          h="auto"
+                          minH={0}
+                          p={0}
+                          fontSize="10px"
+                          fontWeight="800"
+                          letterSpacing="0.08em"
+                          textTransform="uppercase"
+                          justifyContent="flex-start"
+                          color="inherit"
+                          _hover={{ bg: "transparent", color: "brand.500" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleSort("created_at");
+                          }}
+                        >
+                          Joined{sortIndicator("created_at")}
+                        </Button>
+                      </Grid>
+
+                      {filteredSorted.length === 0 ? (
+                        <Box textAlign="center" py={12} color="app.muted">
+                          No entries match your filters.
+                        </Box>
+                      ) : (
+                        <Accordion allowMultiple>
+                          {filteredSorted.map((r, i) => {
+                            const st = normalizeStatus(r.status);
+                            const stStyle = STATUS_STYLE[st];
+                            return (
+                              <AccordionItem key={r.id} border="none" borderBottomWidth="1px" borderColor="glass.border">
+                                <AccordionButton
+                                  px={{ base: 3, md: 4 }}
+                                  py={3}
+                                  _hover={{ bg: rowHoverBg }}
+                                  _expanded={{ bg: expandPanelBg }}
+                                >
+                                  <HStack align="flex-start" spacing={3} w="full" textAlign="left">
+                                  <VStack
+                                    align="stretch"
+                                    spacing={2}
+                                    flex="1"
+                                    display={{ base: "flex", md: "none" }}
+                                    textAlign="left"
+                                  >
+                                    <HStack justify="space-between" align="center">
+                                      <Text color="app.muted" fontWeight="800" fontSize="xs">
+                                        #{i + 1}
+                                      </Text>
+                                      <AccordionIcon color="app.muted" />
+                                    </HStack>
+                                    <Text fontWeight="700" fontSize="md">
+                                      {r.full_name}
+                                    </Text>
+                                    <Link
+                                      href={`mailto:${r.email}`}
+                                      color="brand.500"
+                                      fontWeight="600"
+                                      fontSize="sm"
+                                      wordBreak="break-all"
+                                    >
+                                      {r.email}
+                                    </Link>
+                                    <Text fontSize="sm" color="app.muted">
                                       {r.phone ?? "—"}
-                                    </Td>
-                                    <Td>
+                                    </Text>
+                                    {r.hear_about_us ? (
+                                      <Badge
+                                        alignSelf="flex-start"
+                                        borderRadius="md"
+                                        bg="socksmith.redLight"
+                                        color="socksmith.red"
+                                        fontWeight="800"
+                                        fontSize="10px"
+                                        textTransform="uppercase"
+                                        letterSpacing="0.04em"
+                                      >
+                                        {r.hear_about_us}
+                                      </Badge>
+                                    ) : (
+                                      <Text color="app.muted" fontSize="sm">
+                                        —
+                                      </Text>
+                                    )}
+                                    <Box onClick={(e) => e.stopPropagation()}>
+                                      <Select
+                                        size="sm"
+                                        borderRadius="md"
+                                        fontWeight="700"
+                                        value={st}
+                                        bg={stStyle.bg}
+                                        color={stStyle.color}
+                                        borderColor="transparent"
+                                        w="full"
+                                        onChange={(e) =>
+                                          void updateStatus(
+                                            r.id,
+                                            e.target.value as WaitlistStatus,
+                                          )
+                                        }
+                                      >
+                                        {WAITLIST_STATUSES.map((s) => (
+                                          <option key={s} value={s}>
+                                            {formatWaitlistStatus(s)}
+                                          </option>
+                                        ))}
+                                      </Select>
+                                    </Box>
+                                    <Text fontSize="xs" color="app.muted">
+                                      {new Date(r.created_at).toLocaleString()}
+                                    </Text>
+                                  </VStack>
+
+                                  <Grid
+                                    flex="1"
+                                    textAlign="left"
+                                    display={{ base: "none", md: "grid" }}
+                                    templateColumns={WAITLIST_DESKTOP_COLS}
+                                    gap={3}
+                                    alignItems="center"
+                                    w="full"
+                                  >
+                                    <Text color="app.muted" fontWeight="800" fontSize="sm">
+                                      {i + 1}
+                                    </Text>
+                                    <Text fontWeight="700" fontSize="sm" noOfLines={2}>
+                                      {r.full_name}
+                                    </Text>
+                                    <Text fontSize="sm" color="app.muted" noOfLines={1}>
+                                      {r.phone ?? "—"}
+                                    </Text>
+                                    <Box minW={0}>
                                       <Link
                                         href={`mailto:${r.email}`}
                                         color="brand.500"
                                         fontWeight="600"
+                                        fontSize="sm"
+                                        wordBreak="break-all"
                                       >
                                         {r.email}
                                       </Link>
-                                    </Td>
-                                    <Td display={{ base: "none", lg: "table-cell" }}>
+                                    </Box>
+                                    <Box minW={0}>
                                       {r.hear_about_us ? (
                                         <Badge
                                           borderRadius="md"
@@ -552,33 +752,18 @@ export function AdminWaitlistDashboard() {
                                           fontSize="10px"
                                           textTransform="uppercase"
                                           letterSpacing="0.04em"
+                                          maxW="full"
+                                          whiteSpace="normal"
                                         >
                                           {r.hear_about_us}
                                         </Badge>
                                       ) : (
-                                        <Text color="app.muted">—</Text>
+                                        <Text color="app.muted" fontSize="sm">
+                                          —
+                                        </Text>
                                       )}
-                                    </Td>
-                                    <Td
-                                      display={{ base: "none", xl: "table-cell" }}
-                                      maxW="200px"
-                                      whiteSpace="normal"
-                                      fontSize="xs"
-                                    >
-                                      {(r.sock_interests ?? []).length
-                                        ? (r.sock_interests ?? []).join(", ")
-                                        : "—"}
-                                    </Td>
-                                    <Td
-                                      display={{ base: "none", "2xl": "table-cell" }}
-                                      maxW="220px"
-                                      whiteSpace="normal"
-                                      fontSize="xs"
-                                    >
-                                      {[r.shoe_size, r.drop_focus].filter(Boolean).join(" · ") ||
-                                        "—"}
-                                    </Td>
-                                    <Td>
+                                    </Box>
+                                    <Box onClick={(e) => e.stopPropagation()}>
                                       <Select
                                         size="sm"
                                         borderRadius="md"
@@ -601,36 +786,96 @@ export function AdminWaitlistDashboard() {
                                           </option>
                                         ))}
                                       </Select>
-                                    </Td>
-                                    <Td
-                                      display={{ base: "none", md: "table-cell" }}
-                                      whiteSpace="nowrap"
-                                      fontSize="xs"
-                                    >
+                                    </Box>
+                                    <Text fontSize="xs" color="app.muted" whiteSpace="nowrap">
                                       {new Date(r.created_at).toLocaleString()}
-                                    </Td>
-                                    <Td
-                                      display={{ base: "none", lg: "table-cell" }}
-                                      maxW="140px"
-                                      isTruncated
-                                      title={r.note ?? ""}
-                                    >
-                                      {r.note?.trim() ? r.note : "—"}
-                                    </Td>
-                                  </Tr>
-                                );
-                              })
-                            )}
-                          </Tbody>
-                        </Table>
-                      </TableContainer>
+                                    </Text>
+                                  </Grid>
+                                  <AccordionIcon
+                                    display={{ base: "none", md: "block" }}
+                                    alignSelf="center"
+                                    color="app.muted"
+                                  />
+                                  </HStack>
+                                </AccordionButton>
+                                <AccordionPanel px={{ base: 3, md: 4 }} pb={4} pt={0} bg={expandPanelBg}>
+                                  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                                    <Box>
+                                      <Text
+                                        fontSize="10px"
+                                        fontWeight="800"
+                                        letterSpacing="0.1em"
+                                        textTransform="uppercase"
+                                        color="app.muted"
+                                      >
+                                        Interests
+                                      </Text>
+                                      <Wrap mt={2} spacing={2}>
+                                        {(r.sock_interests ?? []).length ? (
+                                          (r.sock_interests ?? []).map((tag) => (
+                                            <WrapItem key={tag}>
+                                              <Badge
+                                                borderRadius="full"
+                                                px={2}
+                                                py={0.5}
+                                                fontSize="xs"
+                                                colorScheme="brand"
+                                                variant="subtle"
+                                              >
+                                                {tag}
+                                              </Badge>
+                                            </WrapItem>
+                                          ))
+                                        ) : (
+                                          <Text fontSize="sm" color="app.muted">
+                                            —
+                                          </Text>
+                                        )}
+                                      </Wrap>
+                                    </Box>
+                                    <Box>
+                                      <Text
+                                        fontSize="10px"
+                                        fontWeight="800"
+                                        letterSpacing="0.1em"
+                                        textTransform="uppercase"
+                                        color="app.muted"
+                                      >
+                                        Size & first drop
+                                      </Text>
+                                      <Text mt={2} fontSize="sm" color="app.fg">
+                                        {[r.shoe_size, r.drop_focus].filter(Boolean).join(" · ") ||
+                                          "—"}
+                                      </Text>
+                                    </Box>
+                                    <Box gridColumn={{ md: "1 / -1" }}>
+                                      <Text
+                                        fontSize="10px"
+                                        fontWeight="800"
+                                        letterSpacing="0.1em"
+                                        textTransform="uppercase"
+                                        color="app.muted"
+                                      >
+                                        Note
+                                      </Text>
+                                      <Text mt={2} fontSize="sm" color="app.fg" whiteSpace="pre-wrap">
+                                        {r.note?.trim() ? r.note : "—"}
+                                      </Text>
+                                    </Box>
+                                  </SimpleGrid>
+                                </AccordionPanel>
+                              </AccordionItem>
+                            );
+                          })}
+                        </Accordion>
+                      )}
+
                       <HStack
                         justify="space-between"
                         px={4}
                         py={3}
                         borderTopWidth="1px"
-                        borderColor="blackAlpha.100"
-                        _dark={{ borderColor: "whiteAlpha.100" }}
+                        borderColor="glass.border"
                         fontSize="xs"
                         color="app.muted"
                       >
