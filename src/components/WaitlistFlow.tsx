@@ -51,7 +51,6 @@ const STEP_KEYS = [
   "shoe",
   "drop",
   "note",
-  "submit",
 ] as const;
 
 function useBodyScrollLock(locked: boolean) {
@@ -144,8 +143,6 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
         return Boolean(dropFocus);
       case "note":
         return true;
-      case "submit":
-        return true;
       default:
         return false;
     }
@@ -187,6 +184,37 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
           "Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to your environment.",
         status: "error",
         duration: 8000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!hearAbout) {
+      toast({
+        title: "Almost there",
+        description: "Please tell us where you heard about Socksmith.",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
+    if (interests.length === 0) {
+      toast({
+        title: "Pick your styles",
+        description: "Choose at least one type of sock you are curious about.",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      });
+      return;
+    }
+    if (!shoeSize || !dropFocus) {
+      toast({
+        title: "Almost there",
+        description: "Please complete the size and first-drop questions.",
+        status: "warning",
+        duration: 4000,
         isClosable: true,
       });
       return;
@@ -521,58 +549,24 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Optional note…"
                 rows={4}
-                bg="whiteAlpha.150"
-                borderColor="whiteAlpha.300"
+                bg="rgba(255,255,255,0.06)"
+                backdropFilter="blur(12px)"
+                borderWidth="1px"
+                borderColor="whiteAlpha.250"
                 color="white"
                 _placeholder={{ color: "whiteAlpha.500" }}
-                _hover={{ borderColor: "whiteAlpha.500" }}
-                _focus={{ borderColor: "brand.300", boxShadow: "0 0 0 1px var(--chakra-colors-brand-400)" }}
+                _hover={{
+                  bg: "rgba(255,255,255,0.09)",
+                  borderColor: "whiteAlpha.400",
+                }}
+                _focus={{
+                  bg: "rgba(255,255,255,0.1)",
+                  borderColor: "brand.400",
+                  boxShadow: "0 0 0 1px rgba(232, 23, 15, 0.45)",
+                }}
                 borderRadius="xl"
               />
             </FormControl>
-          </VStack>
-        );
-      case "submit":
-        return (
-          <VStack spacing={6} align="stretch">
-            <Heading size="lg" letterSpacing="-0.03em" color="white">
-              You&apos;re all set
-            </Heading>
-            <Text color="whiteAlpha.750" fontSize="sm" lineHeight="tall">
-              <Text as="span" fontWeight="700" color="whiteAlpha.900">
-                {fullName.trim()}
-              </Text>{" "}
-              · {email.trim()} · {phone.trim()}
-              {instagram.trim() ? ` · ${instagram.trim()}` : ""}
-            </Text>
-            <Box
-              borderRadius="xl"
-              bg="whiteAlpha.100"
-              borderWidth="1px"
-              borderColor="whiteAlpha.200"
-              p={4}
-              fontSize="sm"
-              color="whiteAlpha.850"
-              lineHeight="tall"
-            >
-              <Text fontWeight="700" color="white" mb={2}>
-                Your picks
-              </Text>
-              <Text>Heard via: {hearAbout}</Text>
-              <Text mt={1}>Styles: {interests.join(", ")}</Text>
-              <Text mt={1}>Size: {shoeSize}</Text>
-              <Text mt={1}>First drop: {dropFocus}</Text>
-              {note.trim() ? <Text mt={2}>Note: {note.trim()}</Text> : null}
-            </Box>
-            <Button
-              size="lg"
-              colorScheme="brand"
-              isLoading={loading}
-              loadingText="Joining…"
-              onClick={onSubmit}
-            >
-              Join the waitlist
-            </Button>
             {!supabase ? (
               <Text fontSize="xs" color="orange.200">
                 Supabase env vars missing — signups disabled until configured.
@@ -659,22 +653,27 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
             </MotionBox>
           </AnimatePresence>
 
-          {stepKey !== "welcome" && stepKey !== "submit" ? (
-            <HStack justify="space-between" mt={8} spacing={4}>
+          {stepKey !== "welcome" ? (
+            <HStack justify="space-between" mt={8} spacing={4} flexWrap="wrap">
               <Button variant="ghost" color="whiteAlpha.800" onClick={back}>
                 Back
               </Button>
-              <Button colorScheme="brand" onClick={next} px={8} rightIcon={<ChevronRightIcon />}>
-                OK
-              </Button>
-            </HStack>
-          ) : null}
-
-          {stepKey === "submit" ? (
-            <HStack justify="flex-start" mt={8}>
-              <Button variant="ghost" color="whiteAlpha.800" onClick={back}>
-                Back
-              </Button>
+              {stepKey === "note" ? (
+                <Button
+                  colorScheme="brand"
+                  size="lg"
+                  px={8}
+                  isLoading={loading}
+                  loadingText="Joining…"
+                  onClick={onSubmit}
+                >
+                  Join the waitlist
+                </Button>
+              ) : (
+                <Button colorScheme="brand" onClick={next} px={8} rightIcon={<ChevronRightIcon />}>
+                  OK
+                </Button>
+              )}
             </HStack>
           ) : null}
         </Box>

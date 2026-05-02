@@ -86,6 +86,65 @@ const theme = extendTheme({
     }),
   },
   components: {
+    Alert: {
+      variants: {
+        /** Glass toast / inline alert — matches Socksmith landing + waitlist overlay */
+        socksmith: (props: StyleFunctionProps) => {
+          const s = (props.status ?? "info") as string;
+          const accent =
+            s === "success"
+              ? "socksmith.teal"
+              : s === "error"
+                ? "brand.500"
+                : s === "warning"
+                  ? "orange.400"
+                  : s === "loading"
+                    ? "socksmith.pink"
+                    : "socksmith.blue";
+          return {
+            container: {
+              borderRadius: "2xl",
+              borderWidth: "1px",
+              borderColor: "glass.border",
+              borderLeftWidth: "4px",
+              borderLeftColor: accent,
+              bg: "rgba(255, 255, 255, 0.82)",
+              backdropFilter: "blur(14px) saturate(140%)",
+              boxShadow: "0 18px 50px rgba(15, 23, 42, 0.1)",
+              color: "ink.900",
+              py: 3,
+              px: 4,
+              _dark: {
+                bg: "rgba(17, 17, 17, 0.82)",
+                color: "socksmith.cream",
+                borderColor: "whiteAlpha.200",
+                boxShadow: "0 22px 60px rgba(0, 0, 0, 0.45)",
+              },
+            },
+            title: {
+              fontWeight: "700",
+              fontFamily: "heading",
+              letterSpacing: "-0.02em",
+              color: "inherit",
+            },
+            description: {
+              fontWeight: "500",
+              mt: 0.5,
+              color: "ink.600",
+              _dark: { color: "whiteAlpha.800" },
+            },
+            icon: {
+              color: accent,
+              w: "5",
+              h: "5",
+            },
+            spinner: {
+              color: accent,
+            },
+          };
+        },
+      },
+    },
     Button: {
       baseStyle: { fontWeight: "600", borderRadius: "xl" },
     },

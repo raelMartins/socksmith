@@ -54,6 +54,12 @@ function effR(d: SimNode): number {
   return d.r * visualScale(d);
 }
 
+/** px per ms → simulation velocity; capped for stability */
+const THROW_VEL_SCALE = 7.2;
+const THROW_V_MAX = 26;
+const WALL_BOUNCE = 0.82;
+const OVERLAP_VEL_KICK = 0.92;
+
 export function PhysicsBubbleField({
   labels,
   mode,
@@ -95,6 +101,9 @@ export function PhysicsBubbleField({
 
     let { w, h } = readDims();
 
+    /** Recent pointer samples while dragging (for throw velocity on release) */
+    const dragTrail: { x: number; y: number; t: number }[] = [];
+
     const nodes: SimNode[] = labels.map((label, i) => {
       const angle = (i / labels.length) * Math.PI * 2 + Math.random() * 0.35;
       const dist = 26 + Math.random() * 48;
@@ -131,7 +140,7 @@ export function PhysicsBubbleField({
       .radius((d) => effR(d));
 
     const simulation = forceSimulation<SimNode>(nodes)
-      .velocityDecay(0.86)
+      .velocityDecay(0.968)
       .force("lerp", forceLerp as never)
       .force("charge", forceManyBody<SimNode>().strength(-32))
       .force("center", forceCenter(w / 2, h / 2))
@@ -156,8 +165,30 @@ export function PhysicsBubbleField({
               d.x = d.fx;
               d.y = d.fy ?? 0;
             } else {
-              d.x = Math.max(minX, Math.min(maxX, d.x ?? 0));
-              d.y = Math.max(minY, Math.min(maxY, d.y ?? 0));
+              const ox = d.x ?? 0;
+              const oy = d.y ?? 0;
+              let x = ox;
+              let y = oy;
+              if (ox < minX) {
+                x = minX;
+                d.vx = Math.abs(d.vx) * WALL_BOUNCE;
+              } else if (ox > maxX) {
+                x = maxX;
+                d.vx = -Math.abs(d.vx) * WALL_BOUNCE;
+              } else {
+                x = Math.max(minX, Math.min(maxX, ox));
+              }
+              if (oy < minY) {
+                y = minY;
+                d.vy = Math.abs(d.vy) * WALL_BOUNCE;
+              } else if (oy > maxY) {
+                y = maxY;
+                d.vy = -Math.abs(d.vy) * WALL_BOUNCE;
+              } else {
+                y = Math.max(minY, Math.min(maxY, oy));
+              }
+              d.x = x;
+              d.y = y;
             }
           }
         }
@@ -184,6 +215,7 @@ export function PhysicsBubbleField({
                 const nx = dx / dist;
                 const ny = dy / dist;
                 const push = (minDist - dist) * 0.55;
+                const velKick = Math.min(11, push * OVERLAP_VEL_KICK);
                 const aPin = a.fx != null;
                 const bPin = b.fx != null;
                 if (!aPin && !bPin) {
@@ -191,12 +223,20 @@ export function PhysicsBubbleField({
                   a.y! -= ny * push;
                   b.x! += nx * push;
                   b.y! += ny * push;
+                  a.vx -= nx * velKick;
+                  a.vy -= ny * velKick;
+                  b.vx += nx * velKick;
+                  b.vy += ny * velKick;
                 } else if (!aPin) {
                   a.x! -= nx * push * 2;
                   a.y! -= ny * push * 2;
+                  a.vx -= nx * velKick * 1.65;
+                  a.vy -= ny * velKick * 1.65;
                 } else if (!bPin) {
                   b.x! += nx * push * 2;
                   b.y! += ny * push * 2;
+                  b.vx += nx * velKick * 1.65;
+                  b.vy += ny * velKick * 1.65;
                 }
               }
             }
@@ -205,7 +245,7 @@ export function PhysicsBubbleField({
         }
 
         clampAll();
-        resolveOverlaps(2);
+        resolveOverlaps(draggedIdRef.current ? 4 : 2);
 
         for (const d of nodes) {
           const pair = elsRef.current.get(d.id);
@@ -262,8 +302,15 @@ export function PhysicsBubbleField({
       return null;
     }
 
+    function recordDragSample(px: number, py: number) {
+      const t = performance.now();
+      dragTrail.push({ x: px, y: py, t });
+      while (dragTrail.length > 14) dragTrail.shift();
+    }
+
     function onPointerDown(e: PointerEvent) {
       if (e.button !== 0) return;
+      dragTrail.length = 0;
       const { x, y } = clientToLocal(el, e.clientX, e.clientY);
       const hit = hitTest(x, y);
       pointerDownRef.current = { x, y, id: hit?.id ?? null };
@@ -289,6 +336,7 @@ export function PhysicsBubbleField({
         if (dx * dx + dy * dy > 64) {
           dragMovedRef.current = true;
           draggedIdRef.current = down.id;
+          recordDragSample(x, y);
           const d = nodes.find((n) => n.id === down.id);
           if (d) {
             const { w: cw, h: ch } = dimsRef.current;
@@ -297,10 +345,11 @@ export function PhysicsBubbleField({
             d.fx = Math.max(er + pad, Math.min(cw - er - pad, x));
             d.fy = Math.max(er + pad, Math.min(ch - er - pad, y));
           }
-          simulation.alphaTarget(0.38);
+          simulation.alphaTarget(0.42);
         }
       }
       if (draggedIdRef.current) {
+        recordDragSample(x, y);
         const d = nodes.find((n) => n.id === draggedIdRef.current);
         if (d) {
           const { w: cw, h: ch } = dimsRef.current;
@@ -320,9 +369,32 @@ export function PhysicsBubbleField({
         if (d) {
           d.fx = null;
           d.fy = null;
+          if (dragTrail.length >= 2) {
+            const end = dragTrail[dragTrail.length - 1]!;
+            let startI = 0;
+            for (let i = dragTrail.length - 2; i >= 0; i--) {
+              if (end.t - dragTrail[i].t >= 42) {
+                startI = i;
+                break;
+              }
+              startI = i;
+            }
+            const st = dragTrail[startI]!;
+            const dtMs = Math.max(14, end.t - st.t);
+            let vx = ((end.x - st.x) / dtMs) * THROW_VEL_SCALE;
+            let vy = ((end.y - st.y) / dtMs) * THROW_VEL_SCALE;
+            const mag = Math.hypot(vx, vy);
+            if (mag > THROW_V_MAX) {
+              vx = (vx / mag) * THROW_V_MAX;
+              vy = (vy / mag) * THROW_V_MAX;
+            }
+            d.vx = vx;
+            d.vy = vy;
+          }
+          dragTrail.length = 0;
+          simulation.alpha(0.55).alphaTarget(0.16).restart();
         }
         draggedIdRef.current = null;
-        simulation.alphaTarget(0.1);
       } else if (down?.id && !dragMovedRef.current) {
         const hit = hitTest(x, y);
         if (hit && hit.id === down.id) {
