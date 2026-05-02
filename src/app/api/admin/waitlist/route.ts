@@ -3,6 +3,19 @@ import { verifyAdminCookie } from "@/lib/admin-session";
 import { getSupabaseServiceRole } from "@/lib/supabase/admin";
 import { WAITLIST_TABLE } from "@/lib/constants";
 
+const CSV_HEADERS = [
+  "id",
+  "email",
+  "full_name",
+  "phone",
+  "instagram_handle",
+  "hear_about_us",
+  "sock_interests",
+  "note",
+  "status",
+  "created_at",
+] as const;
+
 function escapeCsvCell(value: string) {
   if (/[",\n\r]/.test(value)) {
     return `"${value.replace(/"/g, '""')}"`;
@@ -26,7 +39,9 @@ export async function GET(request: Request) {
 
   const { data, error } = await supabase
     .from(WAITLIST_TABLE)
-    .select("id,email,full_name,instagram_handle,created_at")
+    .select(
+      "id,email,full_name,phone,instagram_handle,hear_about_us,sock_interests,note,status,created_at",
+    )
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -35,12 +50,18 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   if (url.searchParams.get("format") === "csv") {
-    const headers = ["id", "email", "full_name", "instagram_handle", "created_at"] as const;
     const lines = [
-      headers.join(","),
-      ...(data ?? []).map((row) =>
-        headers.map((h) => escapeCsvCell(String((row as Record<string, unknown>)[h] ?? ""))).join(","),
-      ),
+      CSV_HEADERS.join(","),
+      ...(data ?? []).map((row) => {
+        const r = row as Record<string, unknown>;
+        return CSV_HEADERS.map((h) => {
+          let v = r[h];
+          if (h === "sock_interests" && Array.isArray(v)) {
+            v = (v as string[]).join("; ");
+          }
+          return escapeCsvCell(String(v ?? ""));
+        }).join(",");
+      }),
     ];
     const csv = `\uFEFF${lines.join("\n")}`;
     return new NextResponse(csv, {

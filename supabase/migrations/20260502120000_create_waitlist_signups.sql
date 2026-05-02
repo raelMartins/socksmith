@@ -1,6 +1,4 @@
--- Option A: Supabase Dashboard → SQL → New query → paste and run.
--- Option B: Supabase CLI from repo root → `supabase link` then `supabase db push`
---    (uses versioned SQL in `supabase/migrations/`; keep migrations in sync with this file.)
+-- Waitlist table + RLS: anon can insert only; reads go through service role on the server.
 
 create table if not exists public.waitlist_signups (
   id uuid primary key default gen_random_uuid(),
@@ -13,11 +11,10 @@ create table if not exists public.waitlist_signups (
 
 alter table public.waitlist_signups enable row level security;
 
--- Public landing page can insert rows using the anon key.
+drop policy if exists "waitlist insert for anon" on public.waitlist_signups;
+
 create policy "waitlist insert for anon"
   on public.waitlist_signups
   for insert
   to anon
   with check (true);
-
--- No public read access; admin reads go through the service role on your server.
