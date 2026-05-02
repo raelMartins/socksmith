@@ -7,6 +7,8 @@ export type WaitlistRow = {
   instagram_handle: string | null;
   phone: string | null;
   note: string | null;
+  shoe_size: string | null;
+  drop_focus: string | null;
   hear_about_us: string | null;
   sock_interests: string[] | null;
   status: WaitlistStatus | string;

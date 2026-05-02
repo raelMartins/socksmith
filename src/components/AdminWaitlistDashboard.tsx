@@ -280,6 +280,8 @@ export function AdminWaitlistDashboard() {
           (r.phone ?? "").toLowerCase().includes(q) ||
           (r.hear_about_us ?? "").toLowerCase().includes(q) ||
           interests.includes(q) ||
+          (r.shoe_size ?? "").toLowerCase().includes(q) ||
+          (r.drop_focus ?? "").toLowerCase().includes(q) ||
           (r.note ?? "").toLowerCase().includes(q)
         );
       });
@@ -497,6 +499,7 @@ export function AdminWaitlistDashboard() {
                                 Heard via{sortIndicator("hear_about_us")}
                               </Th>
                               <Th display={{ base: "none", xl: "table-cell" }}>Interests</Th>
+                              <Th display={{ base: "none", "2xl": "table-cell" }}>Size · focus</Th>
                               <Th cursor="pointer" onClick={() => toggleSort("status")}>
                                 Status{sortIndicator("status")}
                               </Th>
@@ -513,7 +516,7 @@ export function AdminWaitlistDashboard() {
                           <Tbody>
                             {filteredSorted.length === 0 ? (
                               <Tr>
-                                <Td colSpan={9} textAlign="center" py={12} color="app.muted">
+                                <Td colSpan={10} textAlign="center" py={12} color="app.muted">
                                   No entries match your filters.
                                 </Td>
                               </Tr>
@@ -565,6 +568,15 @@ export function AdminWaitlistDashboard() {
                                       {(r.sock_interests ?? []).length
                                         ? (r.sock_interests ?? []).join(", ")
                                         : "—"}
+                                    </Td>
+                                    <Td
+                                      display={{ base: "none", "2xl": "table-cell" }}
+                                      maxW="220px"
+                                      whiteSpace="normal"
+                                      fontSize="xs"
+                                    >
+                                      {[r.shoe_size, r.drop_focus].filter(Boolean).join(" · ") ||
+                                        "—"}
                                     </Td>
                                     <Td>
                                       <Select

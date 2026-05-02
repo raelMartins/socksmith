@@ -11,6 +11,8 @@ const CSV_HEADERS = [
   "instagram_handle",
   "hear_about_us",
   "sock_interests",
+  "shoe_size",
+  "drop_focus",
   "note",
   "status",
   "created_at",
@@ -40,7 +42,7 @@ export async function GET(request: Request) {
   const { data, error } = await supabase
     .from(WAITLIST_TABLE)
     .select(
-      "id,email,full_name,phone,instagram_handle,hear_about_us,sock_interests,note,status,created_at",
+      "id,email,full_name,phone,instagram_handle,hear_about_us,sock_interests,shoe_size,drop_focus,note,status,created_at",
     )
     .order("created_at", { ascending: false });
 

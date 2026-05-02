@@ -1,12 +1,21 @@
 import { BRAND } from "@/lib/brand";
 
-/** “Where did you hear about us?” — outline pill selection (single). */
+/** “Where did you hear about us?” — stored as plain text on the signup row. */
 export const HEAR_ABOUT_OPTIONS = [
-  "Instagram Ad",
-  "Facebook Ad",
-  "TikTok Ad",
-  "Story Ad",
-  "Referral",
+  "Instagram",
+  "Facebook",
+  "TikTok",
+  "Reddit",
+  "Search / Google",
+  "YouTube",
+  "Podcast",
+  "Newsletter",
+  "Friend",
+  "Retail / IRL",
+  "Press / Blog",
+  "X",
+  "Pinterest",
+  "LinkedIn",
   "Other",
 ] as const;
 
@@ -20,11 +29,33 @@ export const SOCK_INTEREST_OPTIONS = [
   "Gift Bundle",
 ] as const;
 
+/** Typical size — helps first-run grading. */
+export const SHOE_SIZE_OPTIONS = [
+  "US Women’s 5–7",
+  "US Women’s 8–10",
+  "US Men’s 7–9",
+  "US Men’s 10–12",
+  "US Men’s 13+",
+  "Mostly gifting / mixed sizes",
+  "Prefer not to say",
+] as const;
+
+/** What they want from the first drop. */
+export const DROP_FOCUS_OPTIONS = [
+  "Everyday comfort & durability",
+  "Bold color & pattern stories",
+  "Natural yarns & texture",
+  "Low-waste / mindful making",
+  "Gift-ready packaging",
+] as const;
+
 /** Pipeline statuses (stored lowercase in DB). */
 export const WAITLIST_STATUSES = ["waiting", "contacted", "converted", "closed"] as const;
 
 export type HearAboutOption = (typeof HEAR_ABOUT_OPTIONS)[number];
 export type SockInterestOption = (typeof SOCK_INTEREST_OPTIONS)[number];
+export type ShoeSizeOption = (typeof SHOE_SIZE_OPTIONS)[number];
+export type DropFocusOption = (typeof DROP_FOCUS_OPTIONS)[number];
 export type WaitlistStatus = (typeof WAITLIST_STATUSES)[number];
 
 const STATUS_LABEL: Record<WaitlistStatus, string> = {

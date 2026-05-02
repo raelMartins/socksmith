@@ -7,6 +7,8 @@ create table if not exists public.waitlist_signups (
   instagram_handle text,
   phone text,
   note text,
+  shoe_size text,
+  drop_focus text,
   hear_about_us text,
   sock_interests text[] not null default '{}',
   status text not null default 'waiting',

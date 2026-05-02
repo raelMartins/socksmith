@@ -3,19 +3,19 @@
 import {
   Badge,
   Box,
+  Button,
   Container,
   Flex,
   Heading,
   HStack,
-  SimpleGrid,
   Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { SockHeroCanvas } from "./SockHeroCanvas";
+import { useState } from "react";
 import { ThemeToggle } from "./ThemeToggle";
-import { WaitlistForm } from "./WaitlistForm";
+import { WaitlistFlow } from "./WaitlistFlow";
 
 const MotionBox = motion(Box);
 
@@ -25,8 +25,12 @@ const fadeUp = {
 };
 
 export function LandingPage() {
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+
   return (
     <Box as="main">
+      <WaitlistFlow isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
+
       <Box
         as="header"
         position="sticky"
@@ -64,127 +68,146 @@ export function LandingPage() {
         </Container>
       </Box>
 
-      <Container maxW="container.xl" pt={{ base: 10, md: 16 }} pb={{ base: 16, md: 24 }}>
-        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={{ base: 12, lg: 16 }} alignItems="center">
-          <VStack align="stretch" spacing={{ base: 8, md: 10 }}>
-            <MotionBox {...fadeUp} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}>
-              <Badge
-                alignSelf="flex-start"
-                px={3}
-                py={1}
-                borderRadius="full"
-                textTransform="none"
-                letterSpacing="0.01em"
-                colorScheme="brand"
-                variant="subtle"
-                fontWeight="600"
+      <Container maxW="container.md" pt={{ base: 10, md: 16 }} pb={{ base: 16, md: 24 }} px={4}>
+        <VStack spacing={{ base: 10, md: 14 }} align="center" textAlign="center">
+          <MotionBox
+            {...fadeUp}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            w="full"
+          >
+            <Badge
+              px={3}
+              py={1}
+              borderRadius="full"
+              textTransform="none"
+              letterSpacing="0.01em"
+              colorScheme="brand"
+              variant="subtle"
+              fontWeight="600"
+            >
+              Launching soon — limited first run
+            </Badge>
+            <Heading
+              as="h1"
+              fontSize={{ base: "4xl", sm: "5xl", md: "6xl" }}
+              lineHeight="1.05"
+              letterSpacing="-0.04em"
+              mt={5}
+            >
+              Socks built like{" "}
+              <Box
+                as="span"
+                bgGradient="linear(115deg, socksmith.red, socksmith.pinkDark)"
+                bgClip="text"
               >
-                Launching soon — limited first run
-              </Badge>
-              <Heading
-                as="h1"
-                fontSize={{ base: "4xl", sm: "5xl", md: "6xl" }}
-                lineHeight="1.05"
-                letterSpacing="-0.04em"
-                mt={5}
-              >
-                Socks built like{" "}
-                <Box
-                  as="span"
-                  bgGradient="linear(115deg, socksmith.red, socksmith.pinkDark)"
-                  bgClip="text"
-                >
-                  small artifacts
-                </Box>
-                .
-              </Heading>
-              <Text
-                fontSize={{ base: "lg", md: "xl" }}
-                color="app.muted"
-                mt={5}
-                maxW="lg"
-                lineHeight="tall"
-              >
-                Yarn-forward textures, obsessive fit tuning, and color stories that feel more like
-                a wardrobe than a novelty aisle. Join the waitlist for the opening drop.
+                small artifacts
+              </Box>
+              .
+            </Heading>
+            <Text
+              fontSize={{ base: "lg", md: "xl" }}
+              color="app.muted"
+              mt={5}
+              maxW="2xl"
+              mx="auto"
+              lineHeight="tall"
+            >
+              Socksmith is a new sock brand: everyday pairs made with care, starting with a small
+              first drop. Join the waitlist and we will email you when it goes live—no spam, just
+              launch news.
+            </Text>
+
+            <Button
+              mt={8}
+              size="lg"
+              colorScheme="brand"
+              px={10}
+              onClick={() => setWaitlistOpen(true)}
+            >
+              Join the waitlist
+            </Button>
+          </MotionBox>
+
+          <MotionBox
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            w="full"
+          >
+            <HStack spacing={4} flexWrap="wrap" justify="center">
+              <Box>
+                <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
+                  Studio
+                </Text>
+                <Text fontSize="sm" color="app.muted" fontWeight="600">
+                  Small-batch runs
+                </Text>
+              </Box>
+              <Box h="10" w="px" bg="blackAlpha.200" _dark={{ bg: "whiteAlpha.200" }} />
+              <Box>
+                <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
+                  12+
+                </Text>
+                <Text fontSize="sm" color="app.muted" fontWeight="600">
+                  Prototype rounds
+                </Text>
+              </Box>
+              <Box h="10" w="px" bg="blackAlpha.200" _dark={{ bg: "whiteAlpha.200" }} />
+              <Box>
+                <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
+                  1st
+                </Text>
+                <Text fontSize="sm" color="app.muted" fontWeight="600">
+                  Drop is intimate
+                </Text>
+              </Box>
+            </HStack>
+          </MotionBox>
+
+          <MotionBox
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            borderRadius="3xl"
+            borderWidth="1px"
+            borderColor="glass.border"
+            p={{ base: 6, md: 8 }}
+            bg="glass.bg"
+            backdropFilter="blur(16px)"
+            w="full"
+            maxW="xl"
+          >
+            <Heading size="md" letterSpacing="-0.02em">
+              What you are signing up for
+            </Heading>
+            <Stack mt={5} spacing={4} color="app.muted" fontSize="md" lineHeight="tall" textAlign="left">
+              <Text>
+                Early access to the first collection, behind-the-scenes dye lab notes, and a calm
+                inbox — no daily blasts.
               </Text>
-            </MotionBox>
-
-            <MotionBox
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              <Text>
+                If you change your mind, every email includes a one-click unsubscribe. We are
+                building a studio, not a funnel factory.
+              </Text>
+            </Stack>
+            <Button
+              mt={8}
+              size="lg"
+              colorScheme="brand"
+              w={{ base: "full", sm: "auto" }}
+              onClick={() => setWaitlistOpen(true)}
             >
-              <HStack spacing={4} flexWrap="wrap">
-                <Box>
-                  <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
-                    Play
-                  </Text>
-                  <Text fontSize="sm" color="app.muted" fontWeight="600">
-                    Interactive WebGL scene
-                  </Text>
-                </Box>
-                <Box h="10" w="px" bg="blackAlpha.200" _dark={{ bg: "whiteAlpha.200" }} />
-                <Box>
-                  <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
-                    12+
-                  </Text>
-                  <Text fontSize="sm" color="app.muted" fontWeight="600">
-                    Prototype rounds
-                  </Text>
-                </Box>
-                <Box h="10" w="px" bg="blackAlpha.200" _dark={{ bg: "whiteAlpha.200" }} />
-                <Box>
-                  <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
-                    1st
-                  </Text>
-                  <Text fontSize="sm" color="app.muted" fontWeight="600">
-                    Drop is intimate
-                  </Text>
-                </Box>
-              </HStack>
-            </MotionBox>
-          </VStack>
-
-          <SockHeroCanvas />
-        </SimpleGrid>
-
-        <SimpleGrid columns={{ base: 1, lg: 12 }} spacing={10} mt={{ base: 14, md: 20 }}>
-          <Box gridColumn={{ lg: "span 5" }}>
-            <MotionBox
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              borderRadius="3xl"
-              borderWidth="1px"
-              borderColor="glass.border"
-              p={{ base: 6, md: 8 }}
-              bg="glass.bg"
-              backdropFilter="blur(16px)"
-            >
-              <Heading size="md" letterSpacing="-0.02em">
-                What you are signing up for
-              </Heading>
-              <Stack mt={5} spacing={4} color="app.muted" fontSize="md" lineHeight="tall">
-                <Text>
-                  Early access to the first collection, behind-the-scenes dye lab notes, and a
-                  calm inbox — no daily blasts.
-                </Text>
-                <Text>
-                  If you change your mind, every email includes a one-click unsubscribe. We are
-                  building a studio, not a funnel factory.
-                </Text>
-              </Stack>
-            </MotionBox>
-          </Box>
-          <Box gridColumn={{ lg: "span 7" }}>
-            <WaitlistForm />
-          </Box>
-        </SimpleGrid>
+              Join the waitlist
+            </Button>
+            <Text mt={3} fontSize="sm" color="app.muted">
+              Time to Complete: about a minute
+            </Text>
+          </MotionBox>
+        </VStack>
 
         <Text mt={16} textAlign="center" fontSize="sm" color="app.muted">
-          © {new Date().getFullYear()} Socksmith. Crafted with Chakra UI, Next.js, and Three.js.
+          © {new Date().getFullYear()} Socksmith. Built with Chakra UI and Next.js.
         </Text>
       </Container>
     </Box>
