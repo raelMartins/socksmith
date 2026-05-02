@@ -1,3 +1,5 @@
+import { BRAND } from "@/lib/brand";
+
 /** “Where did you hear about us?” — outline pill selection (single). */
 export const HEAR_ABOUT_OPTIONS = [
   "Instagram Ad",
@@ -41,8 +43,8 @@ export const STATUS_STYLE: Record<
   WaitlistStatus,
   { bg: string; color: string; dot: string }
 > = {
-  waiting: { bg: "yellow.100", color: "yellow.900", dot: "#D97706" },
-  contacted: { bg: "blue.100", color: "blue.900", dot: "#2563EB" },
-  converted: { bg: "green.100", color: "green.900", dot: "#16A34A" },
-  closed: { bg: "gray.200", color: "gray.800", dot: "#64748B" },
+  waiting: { bg: "#FEF3C7", color: "#92400E", dot: BRAND.red },
+  contacted: { bg: "#DBEAFE", color: "#1E3A8A", dot: BRAND.blue },
+  converted: { bg: "#CCFBF1", color: "#134E4A", dot: BRAND.teal },
+  closed: { bg: "#F3F4F6", color: "#374151", dot: BRAND.brown },
 };

@@ -33,8 +33,8 @@ export function LandingPage() {
         top={0}
         zIndex={20}
         backdropFilter="blur(14px)"
-        bg="rgba(255,255,255,0.55)"
-        _dark={{ bg: "rgba(11,15,20,0.55)" }}
+        bg="rgba(245, 239, 230, 0.72)"
+        _dark={{ bg: "rgba(17, 17, 17, 0.72)" }}
         borderBottomWidth="1px"
         borderColor="glass.border"
       >
@@ -45,8 +45,8 @@ export function LandingPage() {
                 w={9}
                 h={9}
                 borderRadius="xl"
-                bgGradient="linear(135deg, brand.400, purple.400)"
-                boxShadow="0 10px 30px rgba(232, 93, 4, 0.35)"
+                bgGradient="linear(135deg, socksmith.red, socksmith.pink)"
+                boxShadow="0 12px 36px rgba(232, 23, 15, 0.28)"
               />
               <Box>
                 <Text fontWeight="800" letterSpacing="-0.03em" fontSize="lg" lineHeight="none">
@@ -75,7 +75,7 @@ export function LandingPage() {
                 borderRadius="full"
                 textTransform="none"
                 letterSpacing="0.01em"
-                colorScheme="purple"
+                colorScheme="brand"
                 variant="subtle"
                 fontWeight="600"
               >
@@ -89,7 +89,11 @@ export function LandingPage() {
                 mt={5}
               >
                 Socks built like{" "}
-                <Box as="span" bgGradient="linear(120deg, brand.500, purple.500)" bgClip="text">
+                <Box
+                  as="span"
+                  bgGradient="linear(115deg, socksmith.red, socksmith.pinkDark)"
+                  bgClip="text"
+                >
                   small artifacts
                 </Box>
                 .
@@ -114,10 +118,10 @@ export function LandingPage() {
               <HStack spacing={4} flexWrap="wrap">
                 <Box>
                   <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
-                    3D
+                    Play
                   </Text>
                   <Text fontSize="sm" color="app.muted" fontWeight="600">
-                    Knit-first silhouettes
+                    Interactive WebGL scene
                   </Text>
                 </Box>
                 <Box h="10" w="px" bg="blackAlpha.200" _dark={{ bg: "whiteAlpha.200" }} />

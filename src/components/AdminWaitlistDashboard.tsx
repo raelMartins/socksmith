@@ -30,6 +30,7 @@ import {
   useToast,
   Wrap,
   WrapItem,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,6 +44,7 @@ import {
   type WaitlistStatus,
 } from "@/lib/waitlist-options";
 import type { WaitlistRow } from "@/types/waitlist";
+import { BRAND } from "@/lib/brand";
 
 type SortKey =
   | "created_at"
@@ -52,6 +54,158 @@ type SortKey =
   | "hear_about_us"
   | "status"
   | "sock_interests";
+
+function MetricStat({
+  label,
+  value,
+  variant,
+  accent,
+}: {
+  label: string;
+  value: string | number;
+  variant: "inverse" | "surface" | "gradient";
+  accent?: string;
+}) {
+  const surfaceBg = useColorModeValue(
+    "rgba(255,255,255,0.92)",
+    "rgba(22, 24, 30, 0.94)",
+  );
+
+  if (variant === "inverse") {
+    return (
+      <Box
+        borderRadius="2xl"
+        position="relative"
+        overflow="hidden"
+        bg={BRAND.black}
+        color={BRAND.white}
+        p={{ base: 5, md: 6 }}
+        boxShadow="0 20px 50px rgba(17,17,17,0.1)"
+        _dark={{ boxShadow: "0 24px 60px rgba(0,0,0,0.45)" }}
+      >
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          h="3px"
+          bg={`linear-gradient(90deg, ${BRAND.red}, ${BRAND.pink}, ${BRAND.teal})`}
+        />
+        <Text
+          fontSize="10px"
+          fontWeight="800"
+          textTransform="uppercase"
+          letterSpacing="0.16em"
+          opacity={0.55}
+          mb={2}
+        >
+          {label}
+        </Text>
+        <Text
+          fontSize={{ base: "3xl", md: "4xl" }}
+          fontWeight="900"
+          letterSpacing="-0.04em"
+          sx={{ fontVariantNumeric: "tabular-nums" }}
+        >
+          {value}
+        </Text>
+      </Box>
+    );
+  }
+
+  if (variant === "gradient") {
+    return (
+      <Box
+        borderRadius="2xl"
+        p={{ base: 5, md: 6 }}
+        bg={`linear-gradient(135deg, ${BRAND.red} 0%, ${BRAND.pinkDark} 48%, ${BRAND.blue} 160%)`}
+        color={BRAND.white}
+        position="relative"
+        overflow="hidden"
+        boxShadow="0 20px 48px rgba(232,23,15,0.2)"
+      >
+        <Box
+          position="absolute"
+          top="-45%"
+          right="-25%"
+          w="220px"
+          h="220px"
+          borderRadius="full"
+          bg="whiteAlpha.400"
+          filter="blur(48px)"
+          opacity={0.35}
+          pointerEvents="none"
+        />
+        <Text
+          position="relative"
+          fontSize="10px"
+          fontWeight="800"
+          textTransform="uppercase"
+          letterSpacing="0.16em"
+          opacity={0.92}
+          mb={2}
+        >
+          {label}
+        </Text>
+        <Text
+          position="relative"
+          fontSize={{ base: "3xl", md: "4xl" }}
+          fontWeight="900"
+          letterSpacing="-0.04em"
+          sx={{ fontVariantNumeric: "tabular-nums" }}
+        >
+          {value}
+        </Text>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      borderRadius="2xl"
+      borderWidth="1px"
+      borderColor="glass.border"
+      bg={surfaceBg}
+      backdropFilter="blur(16px)"
+      p={{ base: 5, md: 5 }}
+      position="relative"
+      overflow="hidden"
+      boxShadow="0 10px 36px rgba(17,17,17,0.05)"
+      _dark={{ boxShadow: "0 12px 40px rgba(0,0,0,0.32)" }}
+    >
+      <Box
+        position="absolute"
+        left={0}
+        top={4}
+        bottom={4}
+        w="4px"
+        borderRadius="full"
+        bg={accent ?? BRAND.red}
+      />
+      <Box pl={5}>
+        <Text
+          fontSize="10px"
+          fontWeight="800"
+          textTransform="uppercase"
+          letterSpacing="0.14em"
+          color="app.muted"
+          mb={2}
+        >
+          {label}
+        </Text>
+        <Text
+          fontSize={{ base: "2xl", md: "3xl" }}
+          fontWeight="900"
+          letterSpacing="-0.04em"
+          color="app.fg"
+          sx={{ fontVariantNumeric: "tabular-nums" }}
+        >
+          {value}
+        </Text>
+      </Box>
+    </Box>
+  );
+}
 
 function normalizeStatus(s: string | undefined | null): WaitlistStatus {
   const x = (s ?? "waiting").toLowerCase();
@@ -207,15 +361,6 @@ export function AdminWaitlistDashboard() {
     })).filter((s) => s.count > 0);
   }, [rows]);
 
-  const statCards = [
-    { label: "Total", val: stats.total, accent: "brand.500", bg: "ink.900", fg: "white" },
-    { label: "Waiting", val: stats.waiting, accent: "yellow.400", bg: "glass.bg", fg: "app.fg" },
-    { label: "Contacted", val: stats.contacted, accent: "blue.400", bg: "glass.bg", fg: "app.fg" },
-    { label: "Converted", val: stats.converted, accent: "green.400", bg: "glass.bg", fg: "app.fg" },
-    { label: "Closed", val: stats.closed, accent: "gray.400", bg: "glass.bg", fg: "app.fg" },
-    { label: "Conv. rate", val: `${stats.convRate}%`, accent: "pink.400", bg: "brand.500", fg: "white" },
-  ];
-
   return (
     <Box minH="100vh" py={{ base: 8, md: 12 }}>
       <Container maxW="container.xl">
@@ -227,7 +372,7 @@ export function AdminWaitlistDashboard() {
             gap={4}
           >
             <Box>
-              <Badge colorScheme="purple" borderRadius="full" px={3} py={1} mb={2}>
+              <Badge colorScheme="brand" borderRadius="full" px={3} py={1} mb={2} variant="subtle">
                 Internal
               </Badge>
               <Heading size="lg" letterSpacing="-0.03em">
@@ -255,36 +400,13 @@ export function AdminWaitlistDashboard() {
             </HStack>
           </HStack>
 
-          <SimpleGrid columns={{ base: 2, md: 3, lg: 6 }} spacing={3}>
-            {statCards.map((s) => (
-              <Box
-                key={s.label}
-                borderRadius="xl"
-                borderWidth="1px"
-                borderColor="glass.border"
-                bg={s.bg}
-                color={s.fg}
-                px={4}
-                py={4}
-                boxShadow="sm"
-                borderTopWidth="4px"
-                borderTopColor={s.accent}
-              >
-                <Text fontSize="2xl" fontWeight="800" lineHeight="1.1">
-                  {s.val}
-                </Text>
-                <Text
-                  fontSize="xs"
-                  fontWeight="700"
-                  textTransform="uppercase"
-                  letterSpacing="wider"
-                  opacity={0.75}
-                  mt={1}
-                >
-                  {s.label}
-                </Text>
-              </Box>
-            ))}
+          <SimpleGrid columns={{ base: 1, sm: 2, lg: 3 }} spacing={4}>
+            <MetricStat label="Total signups" value={stats.total} variant="inverse" />
+            <MetricStat label="Waiting" value={stats.waiting} variant="surface" accent={BRAND.red} />
+            <MetricStat label="Contacted" value={stats.contacted} variant="surface" accent={BRAND.blue} />
+            <MetricStat label="Converted" value={stats.converted} variant="surface" accent={BRAND.teal} />
+            <MetricStat label="Closed" value={stats.closed} variant="surface" accent={BRAND.brown} />
+            <MetricStat label="Conversion rate" value={`${stats.convRate}%`} variant="gradient" />
           </SimpleGrid>
 
           {loading ? (
@@ -301,7 +423,7 @@ export function AdminWaitlistDashboard() {
               </Button>
             </Box>
           ) : (
-            <Tabs variant="enclosed" colorScheme="brand">
+            <Tabs variant="soft-rounded" colorScheme="brand">
               <TabList borderBottomWidth="0" flexWrap="wrap" gap={2}>
                 <Tab borderRadius="lg" fontWeight="700">
                   Waitlist
@@ -357,7 +479,7 @@ export function AdminWaitlistDashboard() {
                     >
                       <TableContainer overflowX="auto">
                         <Table size="sm" variant="simple">
-                          <Thead bg="blackAlpha.50" _dark={{ bg: "whiteAlpha.50" }}>
+                          <Thead bg="socksmith.black" color="socksmith.white">
                             <Tr>
                               <Th w="40px">#</Th>
                               <Th cursor="pointer" onClick={() => toggleSort("full_name")}>
@@ -419,7 +541,15 @@ export function AdminWaitlistDashboard() {
                                     </Td>
                                     <Td display={{ base: "none", lg: "table-cell" }}>
                                       {r.hear_about_us ? (
-                                        <Badge borderRadius="md" colorScheme="orange" variant="subtle">
+                                        <Badge
+                                          borderRadius="md"
+                                          bg="socksmith.redLight"
+                                          color="socksmith.red"
+                                          fontWeight="800"
+                                          fontSize="10px"
+                                          textTransform="uppercase"
+                                          letterSpacing="0.04em"
+                                        >
                                           {r.hear_about_us}
                                         </Badge>
                                       ) : (
@@ -549,7 +679,13 @@ export function AdminWaitlistDashboard() {
                                 value={pct}
                                 size="sm"
                                 borderRadius="full"
-                                colorScheme="orange"
+                                bg="blackAlpha.100"
+                                _dark={{ bg: "whiteAlpha.100" }}
+                                sx={{
+                                  "& > div": {
+                                    background: `linear-gradient(90deg, ${BRAND.red}, ${BRAND.pink})`,
+                                  },
+                                }}
                               />
                             </Box>
                           );
@@ -574,7 +710,13 @@ export function AdminWaitlistDashboard() {
                                 value={pct}
                                 size="sm"
                                 borderRadius="full"
-                                colorScheme="purple"
+                                bg="blackAlpha.100"
+                                _dark={{ bg: "whiteAlpha.100" }}
+                                sx={{
+                                  "& > div": {
+                                    background: `linear-gradient(90deg, ${BRAND.teal}, ${BRAND.blue})`,
+                                  },
+                                }}
                               />
                             </Box>
                           );
@@ -583,23 +725,48 @@ export function AdminWaitlistDashboard() {
                     </InsightCard>
                     <Box
                       gridColumn={{ xl: "1 / -1" }}
-                      borderRadius="2xl"
-                      borderWidth="1px"
-                      borderColor="glass.border"
-                      bg="ink.900"
+                      borderRadius="3xl"
+                      position="relative"
+                      overflow="hidden"
+                      p={{ base: 6, md: 8 }}
+                      bg={`linear-gradient(125deg, ${BRAND.black} 0%, ${BRAND.teal} 45%, ${BRAND.brown} 100%)`}
                       color="white"
-                      p={6}
+                      boxShadow="0 24px 60px rgba(15,76,117,0.22)"
                     >
-                      <Text fontWeight="800" mb={2}>
+                      <Box
+                        position="absolute"
+                        top="-40%"
+                        right="-15%"
+                        w="280px"
+                        h="280px"
+                        borderRadius="full"
+                        bg="rgba(244, 114, 182, 0.22)"
+                        filter="blur(70px)"
+                        pointerEvents="none"
+                      />
+                      <Text fontWeight="800" mb={2} position="relative" letterSpacing="-0.02em">
                         Conversion snapshot
                       </Text>
-                      <Text fontSize="4xl" fontWeight="900" color="brand.300">
+                      <Text
+                        fontSize={{ base: "4xl", md: "5xl" }}
+                        fontWeight="900"
+                        color="socksmith.blush"
+                        position="relative"
+                        letterSpacing="-0.04em"
+                      >
                         {stats.convRate}%
                       </Text>
-                      <Text fontSize="sm" opacity={0.75} mt={1} mb={4}>
+                      <Text fontSize="sm" opacity={0.85} mt={1} mb={4} position="relative">
                         converted vs total signups
                       </Text>
-                      <Stack spacing={2} fontSize="sm" borderTopWidth="1px" borderColor="whiteAlpha.200" pt={4}>
+                      <Stack
+                        spacing={2}
+                        fontSize="sm"
+                        borderTopWidth="1px"
+                        borderColor="whiteAlpha.200"
+                        pt={4}
+                        position="relative"
+                      >
                         <HStack justify="space-between">
                           <Text opacity={0.85}>In pipeline (waiting + contacted)</Text>
                           <Text fontWeight="700">{stats.waiting + stats.contacted}</Text>
@@ -632,19 +799,36 @@ export function AdminWaitlistDashboard() {
 }
 
 function InsightCard({ title, children }: { title: string; children: React.ReactNode }) {
+  const innerBg = useColorModeValue(
+    "rgba(255,255,255,0.94)",
+    "rgba(18, 20, 26, 0.96)",
+  );
+
   return (
     <Box
-      borderRadius="2xl"
-      borderWidth="1px"
-      borderColor="glass.border"
-      bg="glass.bg"
-      backdropFilter="blur(12px)"
-      p={6}
+      borderRadius="3xl"
+      p="1px"
+      bg={`linear-gradient(135deg, ${BRAND.red}, ${BRAND.pink}, ${BRAND.blue})`}
+      boxShadow="0 18px 50px rgba(17,17,17,0.07)"
+      _dark={{ boxShadow: "0 22px 55px rgba(0,0,0,0.38)" }}
     >
-      <Text fontWeight="800" fontSize="md" mb={4} letterSpacing="-0.02em">
-        {title}
-      </Text>
-      {children}
+      <Box
+        borderRadius="3xl"
+        bg={innerBg}
+        backdropFilter="blur(18px)"
+        p={{ base: 5, md: 6 }}
+      >
+        <Text
+          fontWeight="800"
+          fontSize="lg"
+          mb={5}
+          letterSpacing="-0.03em"
+          color="app.fg"
+        >
+          {title}
+        </Text>
+        {children}
+      </Box>
     </Box>
   );
 }
