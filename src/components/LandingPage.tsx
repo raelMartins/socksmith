@@ -15,7 +15,6 @@ import {
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
-import { LandingAnimatedGridBackground } from "./LandingAnimatedGridBackground";
 import { LandingSockGallery } from "./LandingSockGallery";
 import { ThemeToggle } from "./ThemeToggle";
 import { WaitlistFlow } from "./WaitlistFlow";
@@ -31,8 +30,14 @@ export function LandingPage() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   return (
-    <Box as="main" position="relative" minH="100vh" overflow="clip">
-      <LandingAnimatedGridBackground />
+    <Box
+      as="main"
+      position="relative"
+      minH="100vh"
+      overflow="clip"
+      bg="socksmith.cream"
+      _dark={{ bg: "gray.950" }}
+    >
       <WaitlistFlow isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
 
       <Box position="relative" zIndex={1}>
@@ -49,20 +54,15 @@ export function LandingPage() {
         >
           <Container maxW="container.xl" py={4}>
           <Flex align="center" justify="space-between" gap={4}>
-            <VStack align="start" spacing={0.5}>
-              <Image
-                src="/images/icons/socksmith-logo.jpeg"
-                alt="Socksmith"
-                width={180}
-                height={48}
-                priority
-                sizes="180px"
-                style={{ height: 40, width: "auto", objectFit: "contain" }}
-              />
-              <Text fontSize="xs" color="app.muted" fontWeight="500" lineHeight="none">
-                Atelier socks
-              </Text>
-            </VStack>
+            <Text
+              as="span"
+              fontWeight="700"
+              fontSize="lg"
+              letterSpacing="-0.02em"
+              lineHeight="none"
+            >
+              Socksmith
+            </Text>
             <HStack spacing={2}>
               <ThemeToggle />
             </HStack>
@@ -89,6 +89,32 @@ export function LandingPage() {
             >
               Launching soon — limited first run
             </Badge>
+            <Box
+              mt={4}
+              mx="auto"
+              position="relative"
+              boxSize={{ base: "148px", sm: "168px", md: "188px" }}
+              borderRadius="full"
+              overflow="hidden"
+              bg="socksmith.cream"
+              _dark={{ bg: "gray.950" }}
+            >
+              <Box position="absolute" inset={3}>
+                <Image
+                  src="/images/icons/socksmith-logo.jpeg"
+                  alt="Socksmith"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 168px, 188px"
+                  style={{
+                    objectFit: "cover",
+                    objectPosition: "center center",
+                    transform: "scale(1.38)",
+                    transformOrigin: "center center",
+                  }}
+                />
+              </Box>
+            </Box>
             <Heading
               as="h1"
               fontSize={{ base: "4xl", sm: "5xl", md: "6xl" }}
@@ -215,7 +241,7 @@ export function LandingPage() {
         </VStack>
 
         <Text mt={16} textAlign="center" fontSize="sm" color="app.muted">
-          © {new Date().getFullYear()} Socksmith. Built with Chakra UI and Next.js.
+          © {new Date().getFullYear()} Socksmith.
         </Text>
         </Container>
       </Box>
