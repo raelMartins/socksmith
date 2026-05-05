@@ -1,61 +1,52 @@
 import { BRAND } from "@/lib/brand";
 
-/** “Where did you hear about us?” — stored as plain text on the signup row. */
+/** Single-select; stored as `hear_about_us` (exact string match). */
 export const HEAR_ABOUT_OPTIONS = [
   "Instagram",
-  "Facebook",
   "TikTok",
-  "Reddit",
-  "Search / Google",
-  "YouTube",
-  "Podcast",
-  "Newsletter",
-  "Friend",
-  "Retail / IRL",
-  "Press / Blog",
-  "X",
-  "Pinterest",
-  "LinkedIn",
+  "Friend or word of mouth",
+  "Google search",
+  "Podcast or newsletter",
+  "Retail or pop-up",
   "Other",
 ] as const;
 
-/** Sock types — filled pill multi-select. */
-export const SOCK_INTEREST_OPTIONS = [
-  "Classic Crew",
-  "No-Show",
-  "Ankle Sport",
-  "Thermal Cosy",
-  "Kids Range",
-  "Gift Bundle",
-] as const;
-
-/** Typical size — helps first-run grading. */
+/** Single-select; stored as `shoe_size` (rough range). */
 export const SHOE_SIZE_OPTIONS = [
-  "US Women’s 5–7",
-  "US Women’s 8–10",
-  "US Men’s 7–9",
-  "US Men’s 10–12",
-  "US Men’s 13+",
-  "Mostly gifting / mixed sizes",
-  "Prefer not to say",
+  "US 4–6",
+  "US 6.5–8",
+  "US 8.5–10",
+  "US 10.5–12",
+  "US 12+",
 ] as const;
 
-/** What they want from the first drop. */
+/** Single-select; stored as `drop_focus`. */
 export const DROP_FOCUS_OPTIONS = [
-  "Everyday comfort & durability",
-  "Bold color & pattern stories",
-  "Natural yarns & texture",
-  "Low-waste / mindful making",
+  "Standout patterns & color",
+  "Quiet, everyday staples",
   "Gift-ready packaging",
+  "Sustainable materials story",
+  "Limited-run exclusivity",
+] as const;
+
+export type HearAboutOption = (typeof HEAR_ABOUT_OPTIONS)[number];
+export type ShoeSizeOption = (typeof SHOE_SIZE_OPTIONS)[number];
+export type DropFocusOption = (typeof DROP_FOCUS_OPTIONS)[number];
+
+/** Sock interests — multi-select on waitlist; stored as text[] on the row. */
+export const SOCK_INTEREST_OPTIONS = [
+  "Corporate",
+  "Kid range",
+  "Sports",
+  "Gift bundle",
+  "Ankle sport",
+  "No-show",
 ] as const;
 
 /** Pipeline statuses (stored lowercase in DB). */
 export const WAITLIST_STATUSES = ["waiting", "contacted", "converted", "closed"] as const;
 
-export type HearAboutOption = (typeof HEAR_ABOUT_OPTIONS)[number];
 export type SockInterestOption = (typeof SOCK_INTEREST_OPTIONS)[number];
-export type ShoeSizeOption = (typeof SHOE_SIZE_OPTIONS)[number];
-export type DropFocusOption = (typeof DROP_FOCUS_OPTIONS)[number];
 export type WaitlistStatus = (typeof WAITLIST_STATUSES)[number];
 
 const STATUS_LABEL: Record<WaitlistStatus, string> = {

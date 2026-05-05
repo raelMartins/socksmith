@@ -36,7 +36,6 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  HEAR_ABOUT_OPTIONS,
   SOCK_INTEREST_OPTIONS,
   WAITLIST_STATUSES,
   formatWaitlistStatus,
@@ -52,7 +51,6 @@ type SortKey =
   | "full_name"
   | "email"
   | "phone"
-  | "hear_about_us"
   | "status"
   | "sock_interests";
 
@@ -287,10 +285,7 @@ export function AdminWaitlistDashboard() {
           r.full_name.toLowerCase().includes(q) ||
           r.email.toLowerCase().includes(q) ||
           (r.phone ?? "").toLowerCase().includes(q) ||
-          (r.hear_about_us ?? "").toLowerCase().includes(q) ||
           interests.includes(q) ||
-          (r.shoe_size ?? "").toLowerCase().includes(q) ||
-          (r.drop_focus ?? "").toLowerCase().includes(q) ||
           (r.note ?? "").toLowerCase().includes(q)
         );
       });
@@ -355,14 +350,6 @@ export function AdminWaitlistDashboard() {
     router.replace("/admin/login");
     router.refresh();
   }
-
-  const sourceBreakdown = useMemo(() => {
-    const list = rows ?? [];
-    return HEAR_ABOUT_OPTIONS.map((label) => ({
-      label,
-      count: list.filter((e) => e.hear_about_us === label).length,
-    })).filter((s) => s.count > 0);
-  }, [rows]);
 
   const interestBreakdown = useMemo(() => {
     const list = rows ?? [];
@@ -452,7 +439,7 @@ export function AdminWaitlistDashboard() {
                         flex="1"
                         minW={{ base: "100%", md: "220px" }}
                         maxW="md"
-                        placeholder="Search name, email, phone, interests…"
+                        placeholder="Search name, email, phone, interests, notes…"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         borderRadius="xl"
@@ -498,7 +485,7 @@ export function AdminWaitlistDashboard() {
                         borderBottomWidth="1px"
                         borderColor="glass.border"
                       >
-                        Tap a row to see interests, size, first-drop focus, and notes.
+                        Tap a row to see interests and notes.
                       </Text>
                       <Grid
                         display={{ base: "none", md: "grid" }}
@@ -573,10 +560,10 @@ export function AdminWaitlistDashboard() {
                           _hover={{ bg: "transparent", color: "brand.500" }}
                           onClick={(e) => {
                             e.preventDefault();
-                            toggleSort("hear_about_us");
+                            toggleSort("sock_interests");
                           }}
                         >
-                          Heard{sortIndicator("hear_about_us")}
+                          Interests{sortIndicator("sock_interests")}
                         </Button>
                         <Button
                           variant="ghost"
@@ -666,24 +653,11 @@ export function AdminWaitlistDashboard() {
                                     <Text fontSize="sm" color="app.muted">
                                       {r.phone ?? "—"}
                                     </Text>
-                                    {r.hear_about_us ? (
-                                      <Badge
-                                        alignSelf="flex-start"
-                                        borderRadius="md"
-                                        bg="socksmith.redLight"
-                                        color="socksmith.red"
-                                        fontWeight="800"
-                                        fontSize="10px"
-                                        textTransform="uppercase"
-                                        letterSpacing="0.04em"
-                                      >
-                                        {r.hear_about_us}
-                                      </Badge>
-                                    ) : (
-                                      <Text color="app.muted" fontSize="sm">
-                                        —
-                                      </Text>
-                                    )}
+                                    <Text fontSize="sm" color="app.muted" noOfLines={3}>
+                                      {(r.sock_interests ?? []).length
+                                        ? (r.sock_interests ?? []).join(", ")
+                                        : "—"}
+                                    </Text>
                                     <Box onClick={(e) => e.stopPropagation()}>
                                       <Select
                                         size="sm"
@@ -743,25 +717,11 @@ export function AdminWaitlistDashboard() {
                                       </Link>
                                     </Box>
                                     <Box minW={0}>
-                                      {r.hear_about_us ? (
-                                        <Badge
-                                          borderRadius="md"
-                                          bg="socksmith.redLight"
-                                          color="socksmith.red"
-                                          fontWeight="800"
-                                          fontSize="10px"
-                                          textTransform="uppercase"
-                                          letterSpacing="0.04em"
-                                          maxW="full"
-                                          whiteSpace="normal"
-                                        >
-                                          {r.hear_about_us}
-                                        </Badge>
-                                      ) : (
-                                        <Text color="app.muted" fontSize="sm">
-                                          —
-                                        </Text>
-                                      )}
+                                      <Text fontSize="sm" color="app.fg" noOfLines={2}>
+                                        {(r.sock_interests ?? []).length
+                                          ? (r.sock_interests ?? []).join(", ")
+                                          : "—"}
+                                      </Text>
                                     </Box>
                                     <Box onClick={(e) => e.stopPropagation()}>
                                       <Select
@@ -799,7 +759,7 @@ export function AdminWaitlistDashboard() {
                                   </HStack>
                                 </AccordionButton>
                                 <AccordionPanel px={{ base: 3, md: 4 }} pb={4} pt={0} bg={expandPanelBg}>
-                                  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                                  <SimpleGrid columns={{ base: 1, md: 1 }} spacing={4}>
                                     <Box>
                                       <Text
                                         fontSize="10px"
@@ -834,21 +794,6 @@ export function AdminWaitlistDashboard() {
                                       </Wrap>
                                     </Box>
                                     <Box>
-                                      <Text
-                                        fontSize="10px"
-                                        fontWeight="800"
-                                        letterSpacing="0.1em"
-                                        textTransform="uppercase"
-                                        color="app.muted"
-                                      >
-                                        Size & first drop
-                                      </Text>
-                                      <Text mt={2} fontSize="sm" color="app.fg">
-                                        {[r.shoe_size, r.drop_focus].filter(Boolean).join(" · ") ||
-                                          "—"}
-                                      </Text>
-                                    </Box>
-                                    <Box gridColumn={{ md: "1 / -1" }}>
                                       <Text
                                         fontSize="10px"
                                         fontWeight="800"
@@ -917,37 +862,6 @@ export function AdminWaitlistDashboard() {
                           </Box>
                         );
                       })}
-                    </InsightCard>
-                    <InsightCard title="Where they heard about us">
-                      {sourceBreakdown.length === 0 ? (
-                        <Text color="app.muted" fontSize="sm">
-                          No data yet.
-                        </Text>
-                      ) : (
-                        sourceBreakdown.map((s) => {
-                          const pct = stats.total ? (s.count / stats.total) * 100 : 0;
-                          return (
-                            <Box key={s.label} mb={3}>
-                              <HStack justify="space-between" mb={1} fontSize="sm" fontWeight="600">
-                                <Text>{s.label}</Text>
-                                <Text color="app.muted">{s.count}</Text>
-                              </HStack>
-                              <Progress
-                                value={pct}
-                                size="sm"
-                                borderRadius="full"
-                                bg="blackAlpha.100"
-                                _dark={{ bg: "whiteAlpha.100" }}
-                                sx={{
-                                  "& > div": {
-                                    background: `linear-gradient(90deg, ${BRAND.red}, ${BRAND.pink})`,
-                                  },
-                                }}
-                              />
-                            </Box>
-                          );
-                        })
-                      )}
                     </InsightCard>
                     <InsightCard title="Sock interests">
                       {interestBreakdown.length === 0 ? (

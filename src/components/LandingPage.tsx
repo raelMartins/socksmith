@@ -13,7 +13,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useState } from "react";
+import { LandingAnimatedGridBackground } from "./LandingAnimatedGridBackground";
+import { LandingSockGallery } from "./LandingSockGallery";
 import { ThemeToggle } from "./ThemeToggle";
 import { WaitlistFlow } from "./WaitlistFlow";
 
@@ -28,47 +31,46 @@ export function LandingPage() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   return (
-    <Box as="main">
+    <Box as="main" position="relative" minH="100vh" overflow="clip">
+      <LandingAnimatedGridBackground />
       <WaitlistFlow isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
 
-      <Box
-        as="header"
-        position="sticky"
-        top={0}
-        zIndex={20}
-        backdropFilter="blur(14px)"
-        bg="rgba(245, 239, 230, 0.72)"
-        _dark={{ bg: "rgba(17, 17, 17, 0.72)" }}
-        borderBottomWidth="1px"
-        borderColor="glass.border"
-      >
-        <Container maxW="container.xl" py={4}>
+      <Box position="relative" zIndex={1}>
+        <Box
+          as="header"
+          position="sticky"
+          top={0}
+          zIndex={20}
+          backdropFilter="blur(14px)"
+          bg="rgba(245, 239, 230, 0.72)"
+          _dark={{ bg: "rgba(17, 17, 17, 0.72)" }}
+          borderBottomWidth="1px"
+          borderColor="glass.border"
+        >
+          <Container maxW="container.xl" py={4}>
           <Flex align="center" justify="space-between" gap={4}>
-            <HStack spacing={3}>
-              <Box
-                w={9}
-                h={9}
-                borderRadius="xl"
-                bgGradient="linear(135deg, socksmith.red, socksmith.pink)"
-                boxShadow="0 12px 36px rgba(232, 23, 15, 0.28)"
+            <VStack align="start" spacing={0.5}>
+              <Image
+                src="/images/icons/socksmith-logo.jpeg"
+                alt="Socksmith"
+                width={180}
+                height={48}
+                priority
+                sizes="180px"
+                style={{ height: 40, width: "auto", objectFit: "contain" }}
               />
-              <Box>
-                <Text fontWeight="800" letterSpacing="-0.03em" fontSize="lg" lineHeight="none">
-                  Socksmith
-                </Text>
-                <Text fontSize="xs" color="app.muted" fontWeight="500">
-                  Atelier socks
-                </Text>
-              </Box>
-            </HStack>
+              <Text fontSize="xs" color="app.muted" fontWeight="500" lineHeight="none">
+                Atelier socks
+              </Text>
+            </VStack>
             <HStack spacing={2}>
               <ThemeToggle />
             </HStack>
           </Flex>
-        </Container>
-      </Box>
+          </Container>
+        </Box>
 
-      <Container maxW="container.md" pt={{ base: 10, md: 16 }} pb={{ base: 16, md: 24 }} px={4}>
+        <Container maxW="container.md" pt={{ base: 10, md: 16 }} pb={{ base: 8, md: 10 }} px={4}>
         <VStack spacing={{ base: 10, md: 14 }} align="center" textAlign="center">
           <MotionBox
             {...fadeUp}
@@ -163,7 +165,13 @@ export function LandingPage() {
               </Box>
             </HStack>
           </MotionBox>
+        </VStack>
+        </Container>
 
+        <LandingSockGallery />
+
+        <Container maxW="container.md" pb={{ base: 16, md: 24 }} px={4}>
+        <VStack spacing={{ base: 10, md: 14 }} align="center" textAlign="center">
           <MotionBox
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -209,7 +217,8 @@ export function LandingPage() {
         <Text mt={16} textAlign="center" fontSize="sm" color="app.muted">
           © {new Date().getFullYear()} Socksmith. Built with Chakra UI and Next.js.
         </Text>
-      </Container>
+        </Container>
+      </Box>
     </Box>
   );
 }

@@ -20,17 +20,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase/browser";
 import { WAITLIST_TABLE } from "@/lib/constants";
-import {
-  DROP_FOCUS_OPTIONS,
-  HEAR_ABOUT_OPTIONS,
-  SHOE_SIZE_OPTIONS,
-  SOCK_INTEREST_OPTIONS,
-  type DropFocusOption,
-  type HearAboutOption,
-  type ShoeSizeOption,
-  type SockInterestOption,
-} from "@/lib/waitlist-options";
+import { SOCK_INTEREST_OPTIONS, type SockInterestOption } from "@/lib/waitlist-options";
 import { PhysicsBubbleField } from "./PhysicsBubbleField";
+import { WaitlistAnimatedGridBackground } from "./WaitlistAnimatedGridBackground";
+import { WaitlistSockGallery } from "./WaitlistSockGallery";
 
 const MotionBox = motion(Box);
 
@@ -40,18 +33,7 @@ const slideVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0, filter: "blur(4px)" }),
 };
 
-const STEP_KEYS = [
-  "welcome",
-  "name",
-  "email",
-  "phone",
-  "instagram",
-  "hear",
-  "interests",
-  "shoe",
-  "drop",
-  "note",
-] as const;
+const STEP_KEYS = ["welcome", "name", "email", "phone", "interests", "note"] as const;
 
 function useBodyScrollLock(locked: boolean) {
   useEffect(() => {
@@ -78,11 +60,7 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [instagram, setInstagram] = useState("");
-  const [hearAbout, setHearAbout] = useState<HearAboutOption | "">("");
   const [interests, setInterests] = useState<SockInterestOption[]>([]);
-  const [shoeSize, setShoeSize] = useState<ShoeSizeOption | "">("");
-  const [dropFocus, setDropFocus] = useState<DropFocusOption | "">("");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -95,11 +73,7 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
     setFullName("");
     setEmail("");
     setPhone("");
-    setInstagram("");
-    setHearAbout("");
     setInterests([]);
-    setShoeSize("");
-    setDropFocus("");
     setNote("");
     setLoading(false);
   }, [isOpen]);
@@ -131,16 +105,8 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
         return emailOk;
       case "phone":
         return phone.trim().length >= 6;
-      case "instagram":
-        return true;
-      case "hear":
-        return Boolean(hearAbout);
       case "interests":
         return interests.length > 0;
-      case "shoe":
-        return Boolean(shoeSize);
-      case "drop":
-        return Boolean(dropFocus);
       case "note":
         return true;
       default:
@@ -151,10 +117,7 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
     fullName,
     emailOk,
     phone,
-    hearAbout,
     interests.length,
-    shoeSize,
-    dropFocus,
   ]);
 
   const next = useCallback(() => {
@@ -189,30 +152,10 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
       return;
     }
 
-    if (!hearAbout) {
-      toast({
-        title: "Almost there",
-        description: "Please tell us where you heard about Socksmith.",
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-      });
-      return;
-    }
     if (interests.length === 0) {
       toast({
         title: "Pick your styles",
-        description: "Choose at least one type of sock you are curious about.",
-        status: "warning",
-        duration: 4000,
-        isClosable: true,
-      });
-      return;
-    }
-    if (!shoeSize || !dropFocus) {
-      toast({
-        title: "Almost there",
-        description: "Please complete the size and first-drop questions.",
+        description: "Choose at least one interest before joining.",
         status: "warning",
         duration: 4000,
         isClosable: true,
@@ -225,11 +168,7 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
       full_name: fullName.trim(),
       email: email.trim().toLowerCase(),
       phone: phone.trim(),
-      instagram_handle: instagram.trim() || null,
-      hear_about_us: hearAbout,
       sock_interests: interests,
-      shoe_size: shoeSize || null,
-      drop_focus: dropFocus || null,
       note: note.trim() || null,
       status: "waiting",
     });
@@ -263,11 +202,7 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
     fullName,
     email,
     phone,
-    instagram,
-    hearAbout,
     interests,
-    shoeSize,
-    dropFocus,
     note,
     toast,
     onClose,
@@ -287,6 +222,7 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
               This is a short set of questions to join the waitlist for our first drop. It takes
               about a minute—then you are on the list.
             </Text>
+            <WaitlistSockGallery />
             <Button
               size="lg"
               colorScheme="brand"
@@ -397,68 +333,6 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
             </FormControl>
           </VStack>
         );
-      case "instagram":
-        return (
-          <VStack spacing={6} align="stretch">
-            <Box>
-              <Text fontSize="sm" fontWeight="700" color="whiteAlpha.600" letterSpacing="0.12em">
-                STEP {stepIndex} / {maxStep}
-              </Text>
-              <Heading size="lg" mt={3} letterSpacing="-0.03em" color="white">
-                Instagram handle{" "}
-                <Text as="span" fontSize="md" color="whiteAlpha.500" fontWeight="500">
-                  (optional)
-                </Text>
-              </Heading>
-              <Text color="whiteAlpha.700" mt={2} fontSize="sm">
-                If you share it, we might tag you in a story — never without checking first.
-              </Text>
-            </Box>
-            <FormControl>
-              <FormLabel color="whiteAlpha.800" fontWeight="600">
-                @handle
-              </FormLabel>
-              <Input
-                size="lg"
-                value={instagram}
-                onChange={(e) => setInstagram(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && next()}
-                placeholder="@yourhandle"
-                autoFocus
-                bg="whiteAlpha.150"
-                borderColor="whiteAlpha.300"
-                color="white"
-                _placeholder={{ color: "whiteAlpha.500" }}
-                _hover={{ borderColor: "whiteAlpha.500" }}
-                _focus={{ borderColor: "brand.300", boxShadow: "0 0 0 1px var(--chakra-colors-brand-400)" }}
-              />
-            </FormControl>
-          </VStack>
-        );
-      case "hear":
-        return (
-          <VStack spacing={5} align="stretch">
-            <Box>
-              <Text fontSize="sm" fontWeight="700" color="whiteAlpha.600" letterSpacing="0.12em">
-                STEP {stepIndex} / {maxStep}
-              </Text>
-              <Heading size="lg" mt={3} letterSpacing="-0.03em" color="white">
-                Where did you hear about Socksmith?
-              </Heading>
-              <Text color="whiteAlpha.700" mt={2} fontSize="sm">
-                Tell us where you first ran into Socksmith — it helps us show up in the right
-                corners of the internet (and real life).
-              </Text>
-            </Box>
-            <PhysicsBubbleField
-              labels={HEAR_ABOUT_OPTIONS}
-              mode="single"
-              selectedSingle={hearAbout || undefined}
-              onToggle={(id) => setHearAbout(id as HearAboutOption)}
-              height={360}
-            />
-          </VStack>
-        );
       case "interests":
         return (
           <VStack spacing={5} align="stretch">
@@ -467,11 +341,10 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
                 STEP {stepIndex} / {maxStep}
               </Text>
               <Heading size="lg" mt={3} letterSpacing="-0.03em" color="white">
-                Which sock styles are you curious about?
+                What are you most interested in?
               </Heading>
               <Text color="whiteAlpha.700" mt={2} fontSize="sm">
-                Nudge whatever feels closest — pick as many as you like. Bubbles bump, drift, and
-                shove each other when you grab one.
+                Pick as many as you like — bubbles bump and drift when you grab one.
               </Text>
             </Box>
             <PhysicsBubbleField
@@ -479,52 +352,6 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
               mode="multi"
               selectedMulti={interests}
               onToggle={(id) => toggleInterest(id as SockInterestOption)}
-              height={300}
-            />
-          </VStack>
-        );
-      case "shoe":
-        return (
-          <VStack spacing={5} align="stretch">
-            <Box>
-              <Text fontSize="sm" fontWeight="700" color="whiteAlpha.600" letterSpacing="0.12em">
-                STEP {stepIndex} / {maxStep}
-              </Text>
-              <Heading size="lg" mt={3} letterSpacing="-0.03em" color="white">
-                What size range do you usually wear?
-              </Heading>
-              <Text color="whiteAlpha.700" mt={2} fontSize="sm">
-                Rough ranges are perfect — it tells us who the first grading should fit best.
-              </Text>
-            </Box>
-            <PhysicsBubbleField
-              labels={SHOE_SIZE_OPTIONS}
-              mode="single"
-              selectedSingle={shoeSize || undefined}
-              onToggle={(id) => setShoeSize(id as ShoeSizeOption)}
-              height={320}
-            />
-          </VStack>
-        );
-      case "drop":
-        return (
-          <VStack spacing={5} align="stretch">
-            <Box>
-              <Text fontSize="sm" fontWeight="700" color="whiteAlpha.600" letterSpacing="0.12em">
-                STEP {stepIndex} / {maxStep}
-              </Text>
-              <Heading size="lg" mt={3} letterSpacing="-0.03em" color="white">
-                For the first drop, what matters most to you?
-              </Heading>
-              <Text color="whiteAlpha.700" mt={2} fontSize="sm">
-                One answer is enough — we balance the first drop story and the product mix from this.
-              </Text>
-            </Box>
-            <PhysicsBubbleField
-              labels={DROP_FOCUS_OPTIONS}
-              mode="single"
-              selectedSingle={dropFocus || undefined}
-              onToggle={(id) => setDropFocus(id as DropFocusOption)}
               height={300}
             />
           </VStack>
@@ -594,18 +421,7 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
         },
       }}
     >
-      <Box
-        position="absolute"
-        inset={0}
-        pointerEvents="none"
-        bgGradient="radial(circle at 20% 20%, rgba(232,23,15,0.18), transparent 45%)"
-      />
-      <Box
-        position="absolute"
-        inset={0}
-        pointerEvents="none"
-        bgGradient="radial(circle at 80% 70%, rgba(26,86,219,0.16), transparent 50%)"
-      />
+      <WaitlistAnimatedGridBackground />
 
       <HStack justify="space-between" align="center" px={{ base: 4, md: 8 }} py={4} position="relative">
         <Text fontSize="xs" fontWeight="800" letterSpacing="0.2em" color="whiteAlpha.600">
@@ -631,7 +447,7 @@ export function WaitlistFlow({ isOpen, onClose }: WaitlistFlowProps) {
       </Box>
 
       <Box flex={1} display="flex" alignItems="center" justifyContent="center" px={4} pb={10} overflowY="auto">
-        <Box w="full" maxW="lg" position="relative">
+        <Box w="full" maxW={stepKey === "welcome" ? { base: "full", md: "3xl" } : "lg"} position="relative">
           <AnimatePresence mode="wait" custom={direction}>
             <MotionBox
               key={stepKey}

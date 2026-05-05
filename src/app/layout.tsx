@@ -18,6 +18,10 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: "Socksmith — Join the waitlist",
   description: "Premium socks, crafted with obsession. Be first in line.",
+  icons: {
+    icon: "/images/icons/socksmith-icon.jpeg",
+    apple: "/images/icons/socksmith-icon.jpeg",
+  },
 };
 
 export default function RootLayout({
