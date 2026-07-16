@@ -143,6 +143,7 @@ export function LandingSockGallery() {
             fontSize={{ base: "2xl", md: "3xl" }}
             letterSpacing="-0.03em"
             fontWeight="800"
+            color="app.fg"
           >
             Shapes you will see in the first drop
           </Heading>

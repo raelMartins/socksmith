@@ -10,6 +10,7 @@ import {
   HStack,
   Stack,
   Text,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
@@ -28,6 +29,14 @@ const fadeUp = {
 
 export function LandingPage() {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
+  const pageBg = useColorModeValue("socksmith.cream", "transparent");
+  const headerBg = useColorModeValue(
+    "rgba(245, 239, 230, 0.72)",
+    "rgba(17, 17, 17, 0.78)",
+  );
+  const logoRingBg = useColorModeValue("socksmith.cream", "socksmith.black");
+  const dividerBg = useColorModeValue("blackAlpha.200", "whiteAlpha.200");
+  const darkOverlayOpacity = useColorModeValue(0, 1);
 
   return (
     <Box
@@ -35,9 +44,22 @@ export function LandingPage() {
       position="relative"
       minH="100vh"
       overflow="clip"
-      bg="socksmith.cream"
-      _dark={{ bg: "gray.950" }}
+      bg={pageBg}
+      color="app.fg"
     >
+      <Box
+        position="absolute"
+        inset={0}
+        zIndex={0}
+        pointerEvents="none"
+        aria-hidden
+        opacity={darkOverlayOpacity}
+        bg="socksmith.black"
+        backgroundImage={`radial-gradient(ellipse 90% 70% at 15% -5%, rgba(26,86,219,0.22), transparent 52%),
+          radial-gradient(ellipse 70% 55% at 100% 0%, rgba(232,23,15,0.14), transparent 48%),
+          radial-gradient(ellipse 60% 50% at 50% 100%, rgba(15,76,117,0.28), transparent 55%)`}
+      />
+
       <WaitlistFlow isOpen={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
 
       <Box position="relative" zIndex={1}>
@@ -47,8 +69,7 @@ export function LandingPage() {
           top={0}
           zIndex={20}
           backdropFilter="blur(14px)"
-          bg="rgba(245, 239, 230, 0.72)"
-          _dark={{ bg: "rgba(17, 17, 17, 0.72)" }}
+          bg={headerBg}
           borderBottomWidth="1px"
           borderColor="glass.border"
         >
@@ -96,8 +117,7 @@ export function LandingPage() {
               boxSize={{ base: "148px", sm: "168px", md: "188px" }}
               borderRadius="full"
               overflow="hidden"
-              bg="socksmith.cream"
-              _dark={{ bg: "gray.950" }}
+              bg={logoRingBg}
             >
               <Box position="absolute" inset={3}>
                 <Image
@@ -171,7 +191,7 @@ export function LandingPage() {
                   Small-batch runs
                 </Text>
               </Box>
-              <Box h="10" w="px" bg="blackAlpha.200" _dark={{ bg: "whiteAlpha.200" }} />
+              <Box h="10" w="px" bg={dividerBg} />
               <Box>
                 <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
                   12+
@@ -180,7 +200,7 @@ export function LandingPage() {
                   Prototype rounds
                 </Text>
               </Box>
-              <Box h="10" w="px" bg="blackAlpha.200" _dark={{ bg: "whiteAlpha.200" }} />
+              <Box h="10" w="px" bg={dividerBg} />
               <Box>
                 <Text fontSize="3xl" fontWeight="800" letterSpacing="-0.03em">
                   1st
