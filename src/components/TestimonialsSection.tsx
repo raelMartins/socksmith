@@ -160,7 +160,7 @@ export function TestimonialsSection() {
         <SimpleGrid
           columns={{ base: 1, md: 2 }}
           spacing={{ base: 4, md: 5 }}
-          mt={{ base: 4, md: 5 }}
+          mt="64px"
           justifyItems="center"
         >
           {FEATURE_IMAGES.map((feature) => (
