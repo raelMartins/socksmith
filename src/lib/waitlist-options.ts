@@ -79,6 +79,48 @@ export type FavouriteColourOption =
 export type BoxQuantityOption = (typeof BOX_QUANTITY_OPTIONS)[number];
 export type WaitlistStatus = (typeof WAITLIST_STATUSES)[number];
 
+const COLOUR_HEX_BY_LABEL: Record<string, string> = Object.fromEntries(
+  FAVOURITE_COLOUR_OPTIONS.map((c) => [c.label, c.hex]),
+);
+
+/** Resolve swatch hex for a favourite-colour label. */
+export function colourHex(label: string): string {
+  return COLOUR_HEX_BY_LABEL[label] ?? "#9CA3AF";
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const raw = hex.replace("#", "").trim();
+  const full =
+    raw.length === 3
+      ? raw
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : raw;
+  if (!/^[0-9a-fA-F]{6}$/.test(full)) return null;
+  return {
+    r: parseInt(full.slice(0, 2), 16),
+    g: parseInt(full.slice(2, 4), 16),
+    b: parseInt(full.slice(4, 6), 16),
+  };
+}
+
+/** Black or white text for contrast on a solid swatch background. */
+export function contrastingTextOn(hex: string): "#111111" | "#FFFFFF" {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return "#111111";
+  // Relative luminance (sRGB)
+  const lum = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+  return lum > 0.62 ? "#111111" : "#FFFFFF";
+}
+
+/** Soft tint of a swatch for selected pill backgrounds. */
+export function colourTint(hex: string, alpha = 0.18): string {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return `rgba(156, 163, 175, ${alpha})`;
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+}
+
 const STATUS_LABEL: Record<WaitlistStatus, string> = {
   waiting: "Waiting",
   contacted: "Contacted",

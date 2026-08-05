@@ -36,6 +36,8 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  BOX_QUANTITY_OPTIONS,
+  FAVOURITE_COLOUR_OPTIONS,
   SOCK_INTEREST_OPTIONS,
   WAITLIST_STATUSES,
   formatWaitlistStatus,
@@ -50,7 +52,7 @@ type SortKey =
   | "created_at"
   | "full_name"
   | "email"
-  | "phone"
+  | "box_quantity"
   | "status"
   | "sock_interests";
 
@@ -215,7 +217,7 @@ function normalizeStatus(s: string | undefined | null): WaitlistStatus {
 
 /** Desktop waitlist row + header column template */
 const WAITLIST_DESKTOP_COLS =
-  "36px minmax(100px,1fr) minmax(88px,0.85fr) minmax(140px,1.15fr) minmax(96px,0.75fr) minmax(128px,1fr) minmax(120px,0.95fr)";
+  "36px minmax(110px,1.1fr) minmax(150px,1.2fr) minmax(110px,1fr) minmax(120px,1fr) minmax(128px,0.9fr) minmax(120px,0.95fr)";
 
 export function AdminWaitlistDashboard() {
   const router = useRouter();
@@ -281,11 +283,13 @@ export function AdminWaitlistDashboard() {
       .filter((r) => {
         if (!q) return true;
         const interests = (r.sock_interests ?? []).join(" ").toLowerCase();
+        const colours = (r.favourite_colours ?? []).join(" ").toLowerCase();
         return (
           r.full_name.toLowerCase().includes(q) ||
           r.email.toLowerCase().includes(q) ||
-          (r.phone ?? "").toLowerCase().includes(q) ||
           interests.includes(q) ||
+          colours.includes(q) ||
+          (r.box_quantity ?? "").toLowerCase().includes(q) ||
           (r.note ?? "").toLowerCase().includes(q)
         );
       });
@@ -299,6 +303,9 @@ export function AdminWaitlistDashboard() {
       } else if (sortKey === "sock_interests") {
         va = (a.sock_interests ?? []).join(", ");
         vb = (b.sock_interests ?? []).join(", ");
+      } else if (sortKey === "box_quantity") {
+        va = a.box_quantity ?? "";
+        vb = b.box_quantity ?? "";
       } else {
         va = String(a[sortKey as keyof WaitlistRow] ?? "");
         vb = String(b[sortKey as keyof WaitlistRow] ?? "");
@@ -356,6 +363,24 @@ export function AdminWaitlistDashboard() {
     return SOCK_INTEREST_OPTIONS.map((label) => ({
       label,
       count: list.filter((e) => (e.sock_interests ?? []).includes(label)).length,
+    })).filter((s) => s.count > 0);
+  }, [rows]);
+
+  const colourBreakdown = useMemo(() => {
+    const list = rows ?? [];
+    return FAVOURITE_COLOUR_OPTIONS.map((c) => ({
+      label: c.label,
+      count: list.filter((e) =>
+        (e.favourite_colours ?? []).includes(c.label),
+      ).length,
+    })).filter((s) => s.count > 0);
+  }, [rows]);
+
+  const quantityBreakdown = useMemo(() => {
+    const list = rows ?? [];
+    return BOX_QUANTITY_OPTIONS.map((label) => ({
+      label,
+      count: list.filter((e) => e.box_quantity === label).length,
     })).filter((s) => s.count > 0);
   }, [rows]);
 
@@ -439,7 +464,7 @@ export function AdminWaitlistDashboard() {
                         flex="1"
                         minW={{ base: "100%", md: "220px" }}
                         maxW="md"
-                        placeholder="Search name, email, phone, interests, notes…"
+                        placeholder="Search name, email, styles, colours, boxes, notes…"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         borderRadius="xl"
@@ -485,7 +510,7 @@ export function AdminWaitlistDashboard() {
                         borderBottomWidth="1px"
                         borderColor="glass.border"
                       >
-                        Tap a row to see interests and notes.
+                        Tap a row to see colours, quantity, and notes.
                       </Text>
                       <Grid
                         display={{ base: "none", md: "grid" }}
@@ -524,7 +549,6 @@ export function AdminWaitlistDashboard() {
                         >
                           Name{sortIndicator("full_name")}
                         </Button>
-                        <Text>Phone</Text>
                         <Button
                           variant="ghost"
                           size="xs"
@@ -563,7 +587,27 @@ export function AdminWaitlistDashboard() {
                             toggleSort("sock_interests");
                           }}
                         >
-                          Interests{sortIndicator("sock_interests")}
+                          Styles{sortIndicator("sock_interests")}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          h="auto"
+                          minH={0}
+                          p={0}
+                          fontSize="10px"
+                          fontWeight="800"
+                          letterSpacing="0.08em"
+                          textTransform="uppercase"
+                          justifyContent="flex-start"
+                          color="inherit"
+                          _hover={{ bg: "transparent", color: "brand.500" }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            toggleSort("box_quantity");
+                          }}
+                        >
+                          Boxes{sortIndicator("box_quantity")}
                         </Button>
                         <Button
                           variant="ghost"
@@ -650,13 +694,13 @@ export function AdminWaitlistDashboard() {
                                     >
                                       {r.email}
                                     </Link>
-                                    <Text fontSize="sm" color="app.muted">
-                                      {r.phone ?? "—"}
-                                    </Text>
-                                    <Text fontSize="sm" color="app.muted" noOfLines={3}>
+                                    <Text fontSize="sm" color="app.muted" noOfLines={2}>
                                       {(r.sock_interests ?? []).length
                                         ? (r.sock_interests ?? []).join(", ")
                                         : "—"}
+                                    </Text>
+                                    <Text fontSize="sm" color="app.muted">
+                                      {r.box_quantity ?? "—"}
                                     </Text>
                                     <Box onClick={(e) => e.stopPropagation()}>
                                       <Select
@@ -702,9 +746,6 @@ export function AdminWaitlistDashboard() {
                                     <Text fontWeight="700" fontSize="sm" noOfLines={2}>
                                       {r.full_name}
                                     </Text>
-                                    <Text fontSize="sm" color="app.muted" noOfLines={1}>
-                                      {r.phone ?? "—"}
-                                    </Text>
                                     <Box minW={0}>
                                       <Link
                                         href={`mailto:${r.email}`}
@@ -723,6 +764,9 @@ export function AdminWaitlistDashboard() {
                                           : "—"}
                                       </Text>
                                     </Box>
+                                    <Text fontSize="sm" color="app.muted" noOfLines={2}>
+                                      {r.box_quantity ?? "—"}
+                                    </Text>
                                     <Box onClick={(e) => e.stopPropagation()}>
                                       <Select
                                         size="sm"
@@ -759,7 +803,7 @@ export function AdminWaitlistDashboard() {
                                   </HStack>
                                 </AccordionButton>
                                 <AccordionPanel px={{ base: 3, md: 4 }} pb={4} pt={0} bg={expandPanelBg}>
-                                  <SimpleGrid columns={{ base: 1, md: 1 }} spacing={4}>
+                                  <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                                     <Box>
                                       <Text
                                         fontSize="10px"
@@ -768,7 +812,7 @@ export function AdminWaitlistDashboard() {
                                         textTransform="uppercase"
                                         color="app.muted"
                                       >
-                                        Interests
+                                        Sock styles
                                       </Text>
                                       <Wrap mt={2} spacing={2}>
                                         {(r.sock_interests ?? []).length ? (
@@ -801,7 +845,54 @@ export function AdminWaitlistDashboard() {
                                         textTransform="uppercase"
                                         color="app.muted"
                                       >
-                                        Note
+                                        Favourite colours
+                                      </Text>
+                                      <Wrap mt={2} spacing={2}>
+                                        {(r.favourite_colours ?? []).length ? (
+                                          (r.favourite_colours ?? []).map((tag) => (
+                                            <WrapItem key={tag}>
+                                              <Badge
+                                                borderRadius="full"
+                                                px={2}
+                                                py={0.5}
+                                                fontSize="xs"
+                                                colorScheme="purple"
+                                                variant="subtle"
+                                              >
+                                                {tag}
+                                              </Badge>
+                                            </WrapItem>
+                                          ))
+                                        ) : (
+                                          <Text fontSize="sm" color="app.muted">
+                                            —
+                                          </Text>
+                                        )}
+                                      </Wrap>
+                                    </Box>
+                                    <Box>
+                                      <Text
+                                        fontSize="10px"
+                                        fontWeight="800"
+                                        letterSpacing="0.1em"
+                                        textTransform="uppercase"
+                                        color="app.muted"
+                                      >
+                                        Box quantity
+                                      </Text>
+                                      <Text mt={2} fontSize="sm" color="app.fg">
+                                        {r.box_quantity ?? "—"}
+                                      </Text>
+                                    </Box>
+                                    <Box>
+                                      <Text
+                                        fontSize="10px"
+                                        fontWeight="800"
+                                        letterSpacing="0.1em"
+                                        textTransform="uppercase"
+                                        color="app.muted"
+                                      >
+                                        Notes
                                       </Text>
                                       <Text mt={2} fontSize="sm" color="app.fg" whiteSpace="pre-wrap">
                                         {r.note?.trim() ? r.note : "—"}
@@ -863,7 +954,7 @@ export function AdminWaitlistDashboard() {
                         );
                       })}
                     </InsightCard>
-                    <InsightCard title="Sock interests">
+                    <InsightCard title="Sock styles">
                       {interestBreakdown.length === 0 ? (
                         <Text color="app.muted" fontSize="sm">
                           No data yet.
@@ -886,6 +977,68 @@ export function AdminWaitlistDashboard() {
                                 sx={{
                                   "& > div": {
                                     background: `linear-gradient(90deg, ${BRAND.teal}, ${BRAND.blue})`,
+                                  },
+                                }}
+                              />
+                            </Box>
+                          );
+                        })
+                      )}
+                    </InsightCard>
+                    <InsightCard title="Favourite colours">
+                      {colourBreakdown.length === 0 ? (
+                        <Text color="app.muted" fontSize="sm">
+                          No data yet.
+                        </Text>
+                      ) : (
+                        colourBreakdown.map((s) => {
+                          const pct = stats.total ? (s.count / stats.total) * 100 : 0;
+                          return (
+                            <Box key={s.label} mb={3}>
+                              <HStack justify="space-between" mb={1} fontSize="sm" fontWeight="600">
+                                <Text>{s.label}</Text>
+                                <Text color="app.muted">{s.count}</Text>
+                              </HStack>
+                              <Progress
+                                value={pct}
+                                size="sm"
+                                borderRadius="full"
+                                bg="blackAlpha.100"
+                                _dark={{ bg: "whiteAlpha.100" }}
+                                sx={{
+                                  "& > div": {
+                                    background: `linear-gradient(90deg, ${BRAND.pink}, ${BRAND.red})`,
+                                  },
+                                }}
+                              />
+                            </Box>
+                          );
+                        })
+                      )}
+                    </InsightCard>
+                    <InsightCard title="Box quantity">
+                      {quantityBreakdown.length === 0 ? (
+                        <Text color="app.muted" fontSize="sm">
+                          No data yet.
+                        </Text>
+                      ) : (
+                        quantityBreakdown.map((s) => {
+                          const pct = stats.total ? (s.count / stats.total) * 100 : 0;
+                          return (
+                            <Box key={s.label} mb={3}>
+                              <HStack justify="space-between" mb={1} fontSize="sm" fontWeight="600">
+                                <Text>{s.label}</Text>
+                                <Text color="app.muted">{s.count}</Text>
+                              </HStack>
+                              <Progress
+                                value={pct}
+                                size="sm"
+                                borderRadius="full"
+                                bg="blackAlpha.100"
+                                _dark={{ bg: "whiteAlpha.100" }}
+                                sx={{
+                                  "& > div": {
+                                    background: `linear-gradient(90deg, ${BRAND.brown}, ${BRAND.teal})`,
                                   },
                                 }}
                               />
