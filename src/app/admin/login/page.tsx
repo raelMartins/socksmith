@@ -76,7 +76,7 @@ function AdminLoginForm() {
             {configError ? (
               <Alert status="error" borderRadius="md" size="sm">
                 <AlertIcon />
-                Set ADMIN_JWT_SECRET (32+ chars), ADMIN_PASSWORD, and Supabase keys in .env.local.
+                Set ADMIN_JWT_SECRET (32+ chars) and ADMIN_PASSWORD in .env.local.
               </Alert>
             ) : null}
 
