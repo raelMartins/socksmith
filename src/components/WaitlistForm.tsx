@@ -28,9 +28,7 @@ import {
   BOX_QUANTITY_OPTIONS,
   FAVOURITE_COLOUR_OPTIONS,
   SOCK_INTEREST_OPTIONS,
-  colourHex,
   colourTint,
-  contrastingTextOn,
   type BoxQuantityOption,
   type FavouriteColourOption,
   type SockInterestOption,
@@ -415,8 +413,15 @@ export function WaitlistForm() {
               {FAVOURITE_COLOUR_OPTIONS.map((colour) => {
                 const active = values.colours.includes(colour.label);
                 const swatch = colour.hex;
-                const activeText = contrastingTextOn(swatch);
-                const softTint = colourTint(swatch, 0.16);
+                const isLight =
+                  swatch.toUpperCase() === "#FFFFFF" ||
+                  swatch.toUpperCase() === "#F3EEE6" ||
+                  swatch.toUpperCase() === "#F5E6C8" ||
+                  swatch.toUpperCase() === "#FACC15" ||
+                  swatch.toUpperCase() === "#A3E635";
+                const activeText = isLight ? "#111111" : swatch;
+                const activeBorder = isLight ? "blackAlpha.400" : swatch;
+                const activeBg = colourTint(swatch, isLight ? 0.35 : 0.16);
                 return (
                   <WrapItem key={colour.label}>
                     <Button
@@ -428,16 +433,13 @@ export function WaitlistForm() {
                       px={4}
                       w="auto"
                       maxW="max-content"
-                      bg={active ? softTint : pillBg}
-                      color={active ? contrastingTextOn(softTint === softTint ? swatch : swatch) : labelColor}
+                      bg={active ? activeBg : pillBg}
+                      color={active ? activeText : labelColor}
                       borderWidth="1.5px"
-                      borderColor={active ? swatch : "transparent"}
-                      boxShadow={
-                        active ? `inset 0 0 0 1px ${swatch}` : undefined
-                      }
+                      borderColor={active ? activeBorder : "transparent"}
                       _hover={{
-                        bg: active ? softTint : pillHoverBg,
-                        borderColor: active ? swatch : "transparent",
+                        bg: active ? activeBg : pillHoverBg,
+                        borderColor: active ? activeBorder : "transparent",
                       }}
                       onClick={() =>
                         update(
@@ -455,11 +457,6 @@ export function WaitlistForm() {
                           borderWidth="1px"
                           borderColor={swatchDotBorder}
                           flexShrink={0}
-                          boxShadow={
-                            active
-                              ? `0 0 0 2px ${activeText === "#FFFFFF" ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.12)"}`
-                              : undefined
-                          }
                         />
                       }
                       sx={{

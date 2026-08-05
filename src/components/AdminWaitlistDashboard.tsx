@@ -40,6 +40,8 @@ import {
   FAVOURITE_COLOUR_OPTIONS,
   SOCK_INTEREST_OPTIONS,
   WAITLIST_STATUSES,
+  colourHex,
+  contrastingTextOn,
   formatWaitlistStatus,
   STATUS_STYLE,
   type WaitlistStatus,
@@ -849,20 +851,35 @@ export function AdminWaitlistDashboard() {
                                       </Text>
                                       <Wrap mt={2} spacing={2}>
                                         {(r.favourite_colours ?? []).length ? (
-                                          (r.favourite_colours ?? []).map((tag) => (
-                                            <WrapItem key={tag}>
-                                              <Badge
-                                                borderRadius="full"
-                                                px={2}
-                                                py={0.5}
-                                                fontSize="xs"
-                                                colorScheme="purple"
-                                                variant="subtle"
-                                              >
-                                                {tag}
-                                              </Badge>
-                                            </WrapItem>
-                                          ))
+                                          (r.favourite_colours ?? []).map((tag) => {
+                                            const hex = colourHex(tag);
+                                            const fg = contrastingTextOn(hex);
+                                            const light =
+                                              hex.toUpperCase() === "#FFFFFF" ||
+                                              hex.toUpperCase() === "#F3EEE6" ||
+                                              hex.toUpperCase() === "#F5E6C8";
+                                            return (
+                                              <WrapItem key={tag}>
+                                                <Badge
+                                                  borderRadius="full"
+                                                  px={2.5}
+                                                  py={0.5}
+                                                  fontSize="xs"
+                                                  fontWeight="700"
+                                                  bg={hex}
+                                                  color={fg}
+                                                  borderWidth="1px"
+                                                  borderColor={
+                                                    light
+                                                      ? "blackAlpha.300"
+                                                      : "transparent"
+                                                  }
+                                                >
+                                                  {tag}
+                                                </Badge>
+                                              </WrapItem>
+                                            );
+                                          })
                                         ) : (
                                           <Text fontSize="sm" color="app.muted">
                                             —
