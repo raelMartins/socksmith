@@ -2,65 +2,10 @@
 
 import { Box, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import Image from "next/image";
-import { sockGallerySrc } from "@/lib/landing-gallery-images";
-
-export type LookbookCard = {
-  src: string;
-  alt: string;
-  caption: string;
-  brandMark?: boolean;
-};
-
-const DEFAULT_CARDS: LookbookCard[] = [
-  {
-    src: sockGallerySrc("Plain Blue.jpg"),
-    alt: "Blue socks on court",
-    caption: "Sock essentials for every occasion.",
-    brandMark: true,
-  },
-  {
-    src: sockGallerySrc("Smile.jpg"),
-    alt: "Minimal white socks",
-    caption: "Comfort style.",
-    brandMark: true,
-  },
-  {
-    src: sockGallerySrc("Plain on Rubble Blue.jpg"),
-    alt: "Textured socks outdoors",
-    caption: "Quality that stands the test of time.",
-    brandMark: true,
-  },
-  {
-    src: sockGallerySrc("Plain Pink.jpg"),
-    alt: "Soft pink socks",
-    caption: "Soft never looked so bold.",
-  },
-  {
-    src: sockGallerySrc("Cover Face.jpg"),
-    alt: "Graphic sock campaign",
-    caption: "Just socks, they said.",
-  },
-  {
-    src: sockGallerySrc("Plain Green.jpg"),
-    alt: "Green socks lifestyle",
-    caption: "Cosy is always in season.",
-    brandMark: true,
-  },
-  {
-    src: sockGallerySrc("Smile Pink.jpg"),
-    alt: "Pink smile socks",
-    caption: "Colour with a point of view.",
-  },
-  {
-    src: sockGallerySrc("Plain Orange.jpg"),
-    alt: "Orange socks detail",
-    caption: "Everyday pairs, studio-made.",
-    brandMark: true,
-  },
-];
+import { CAMPAIGN_MEDIA, type CampaignMedia } from "@/lib/campaign-media";
 
 type LookbookMarqueeProps = {
-  cards?: LookbookCard[];
+  cards?: CampaignMedia[];
   /** Seconds for one full loop of the track. Higher = slower. */
   durationSec?: number;
 };
@@ -69,7 +14,7 @@ function LookbookCardItem({
   card,
   cardShadow,
 }: {
-  card: LookbookCard;
+  card: CampaignMedia;
   cardShadow: string;
 }) {
   return (
@@ -82,31 +27,32 @@ function LookbookCardItem({
       overflow="hidden"
       boxShadow={cardShadow}
       role="group"
+      bg="blackAlpha.100"
     >
-      <Image
-        src={card.src}
-        alt={card.alt}
-        fill
-        sizes="(max-width: 768px) 280px, 320px"
-        style={{ objectFit: "cover" }}
-      />
-      {card.brandMark ? (
-        <Text
+      {card.kind === "video" ? (
+        <Box
+          as="video"
+          src={card.src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
           position="absolute"
-          top={4}
-          right={4}
-          zIndex={1}
-          color="whiteAlpha.900"
-          fontSize="xs"
-          fontWeight="600"
-          letterSpacing="-0.02em"
-          opacity={0.9}
-          transition="opacity 0.28s ease"
-          _groupHover={{ opacity: 0 }}
-        >
-          socks. smith
-        </Text>
-      ) : null}
+          inset={0}
+          w="full"
+          h="full"
+          sx={{ objectFit: "cover" }}
+        />
+      ) : (
+        <Image
+          src={card.src}
+          alt={card.alt}
+          fill
+          sizes="(max-width: 768px) 280px, 320px"
+          style={{ objectFit: "cover" }}
+        />
+      )}
       <Flex
         position="absolute"
         inset={0}
@@ -135,8 +81,8 @@ function LookbookCardItem({
 }
 
 export function LookbookMarquee({
-  cards = DEFAULT_CARDS,
-  durationSec = 48,
+  cards = CAMPAIGN_MEDIA,
+  durationSec = 56,
 }: LookbookMarqueeProps) {
   const cardShadow = useColorModeValue(
     "0 18px 40px rgba(28, 25, 23, 0.12)",
@@ -151,7 +97,6 @@ export function LookbookMarquee({
     "rgba(17, 17, 17, 0)",
   );
 
-  // Duplicate the set so translateX(-50%) loops with no visible jump.
   const track = [...cards, ...cards];
 
   return (
@@ -166,6 +111,9 @@ export function LookbookMarquee({
           "& [data-lookbook-track]": {
             animation: "none !important",
             transform: "none !important",
+          },
+          "& video": {
+            display: "none",
           },
         },
       }}
@@ -190,14 +138,13 @@ export function LookbookMarquee({
       >
         {track.map((card, index) => (
           <LookbookCardItem
-            key={`${card.src}-${index}`}
+            key={`${card.id}-${index}`}
             card={card}
             cardShadow={cardShadow}
           />
         ))}
       </Flex>
 
-      {/* Soft edge fades */}
       <Box
         position="absolute"
         left={0}

@@ -159,7 +159,7 @@ export function HowItWorksSection() {
       pt={{ base: 6, md: 10 }}
       pb={{ base: 12, md: 16 }}
     >
-      <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
+      <Container maxW="container.content" px={{ base: 4, md: 6 }}>
         <VStack align="flex-start" spacing={3} mb={{ base: 8, md: 10 }}>
           <Text
             fontSize="xs"

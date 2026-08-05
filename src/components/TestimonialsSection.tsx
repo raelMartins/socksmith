@@ -12,7 +12,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { sockGallerySrc } from "@/lib/landing-gallery-images";
+import { TESTIMONIAL_FEATURES } from "@/lib/campaign-media";
 
 type Testimonial = {
   quote: string;
@@ -56,20 +56,9 @@ const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-const FEATURE_IMAGES = [
-  {
-    src: sockGallerySrc("Smile.jpg"),
-    alt: "Cosy white socks lifestyle",
-    caption: "Cosy is always in season.",
-    captionPlacement: "end" as const,
-  },
-  {
-    src: sockGallerySrc("Plain on Rubble.jpg"),
-    alt: "Pulling on cream socks with brand mark",
-    caption: null,
-    captionPlacement: "start" as const,
-  },
-];
+const FEATURE_IMAGES = TESTIMONIAL_FEATURES.map((feature) => ({
+  ...feature,
+}));
 
 function TestimonialCard({ item }: { item: Testimonial }) {
   const bg = useColorModeValue(item.cardBg.light, item.cardBg.dark);
@@ -125,7 +114,7 @@ export function TestimonialsSection() {
 
   return (
     <Box as="section" pt={{ base: 4, md: 8 }} pb={{ base: 16, md: 24 }}>
-      <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
+      <Container maxW="container.content" px={{ base: 4, md: 6 }}>
         <VStack align="flex-start" spacing={3} mb={{ base: 8, md: 10 }}>
           <Text
             fontSize="xs"
@@ -156,18 +145,19 @@ export function TestimonialsSection() {
           ))}
         </SimpleGrid>
 
-        <SimpleGrid
-          columns={{ base: 1, md: 2 }}
-          spacing="16px"
+        <Flex
+          direction={{ base: "column", md: "row" }}
+          gap="16px"
           mt="64px"
-          justifyItems="center"
+          w="full"
         >
           {FEATURE_IMAGES.map((feature) => (
             <Box
               key={feature.src}
               position="relative"
+              flex="1"
               w="full"
-              maxW="544px"
+              maxW={{ base: "full", md: "544px" }}
               aspectRatio="544 / 435"
               borderRadius="32px"
               overflow="hidden"
@@ -178,7 +168,7 @@ export function TestimonialsSection() {
                 src={feature.src}
                 alt={feature.alt}
                 fill
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 768px) 100vw, 544px"
                 style={{ objectFit: "cover" }}
               />
               {feature.caption ? (
@@ -208,7 +198,7 @@ export function TestimonialsSection() {
               ) : null}
             </Box>
           ))}
-        </SimpleGrid>
+        </Flex>
       </Container>
     </Box>
   );

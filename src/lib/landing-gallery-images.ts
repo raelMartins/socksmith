@@ -6,9 +6,8 @@ export const LANDING_BACKGROUND_FILENAMES = [
   "Plain Pink.jpg",
 ] as const;
 
-/**
- * Sock photography in `public/images` (excludes `icons/` and `background_images/`).
- * Labels are derived from filenames (extension stripped).
+/** Legacy sock photography in `public/images` (excludes `icons/`, `background_images/`, `campaign/`).
+ * Kept for future gallery use — primary landing creative now lives in `campaign-media.ts`.
  */
 export const SOCK_GALLERY_FILENAMES = [
   "Box in air.jpg",

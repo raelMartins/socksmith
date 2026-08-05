@@ -19,6 +19,7 @@ import { SiteFooter } from "./SiteFooter";
 import { TestimonialsSection } from "./TestimonialsSection";
 import { ThemeToggle } from "./ThemeToggle";
 import { WaitlistForm } from "./WaitlistForm";
+import { HERO_CAMPAIGN } from "@/lib/campaign-media";
 
 const MotionBox = motion.create(Box);
 
@@ -41,14 +42,14 @@ type HeroCard = {
 
 const HERO_CARDS: HeroCard[] = [
   {
-    src: "/images/Plain Pink.jpg",
-    alt: "Soft pink socks",
-    caption: "Soft never looked so bold.",
+    src: HERO_CAMPAIGN.left.src,
+    alt: HERO_CAMPAIGN.left.alt,
+    caption: HERO_CAMPAIGN.left.caption,
     float: { y: [0, -14, 0], duration: 4.2, delay: 0 },
     // 312 × 397, tilted left
     w: { base: "200px", md: "312px" },
     h: { base: "254px", md: "397px" },
-              rotate: "-7deg",
+    rotate: "-7deg",
     zIndex: 2,
     position: {
       top: { base: "10%", md: "6%" },
@@ -56,9 +57,9 @@ const HERO_CARDS: HeroCard[] = [
     },
   },
   {
-    src: "/images/Cover Face.jpg",
-    alt: "Graphic sock campaign",
-    caption: "Just socks, they said.",
+    src: HERO_CAMPAIGN.right.src,
+    alt: HERO_CAMPAIGN.right.alt,
+    caption: HERO_CAMPAIGN.right.caption,
     float: { y: [0, -10, 0], duration: 5.1, delay: 0.4 },
     // 316 × 409, tilted right
     w: { base: "200px", md: "316px" },
@@ -71,9 +72,9 @@ const HERO_CARDS: HeroCard[] = [
     },
   },
   {
-    src: "/images/Plain Blue.jpg",
-    alt: "Blue socks essentials",
-    caption: "Sock essentials for every occasion.",
+    src: HERO_CAMPAIGN.small.src,
+    alt: HERO_CAMPAIGN.small.alt,
+    caption: HERO_CAMPAIGN.small.caption,
     float: { y: [0, -12, 0], duration: 3.8, delay: 0.85 },
     // 190 × 190, tilted right
     w: { base: "140px", md: "190px" },
@@ -212,7 +213,7 @@ export function LandingPage() {
           borderBottomWidth="1px"
           borderColor="glass.border"
         >
-          <Container maxW="container.xl" py={{ base: 3, md: 3.5 }} px={{ base: 4, md: 6 }}>
+          <Container maxW="container.content" py={{ base: 3, md: 3.5 }} px={{ base: 4, md: 6 }}>
             <Flex align="center" justify="space-between" gap={3}>
               <HStack spacing={2.5} minW={0}>
                 <Box
@@ -267,7 +268,7 @@ export function LandingPage() {
 
         {/* Hero */}
         <Container
-          maxW="container.xl"
+          maxW="container.content"
           pt={{ base: 10, md: 16 }}
           pb={{ base: 16, md: 24 }}
           px={{ base: 4, md: 6 }}
@@ -387,7 +388,7 @@ export function LandingPage() {
 
         {/* Lookbook */}
         <Box as="section" pt={{ base: 4, md: 6 }} pb={{ base: 16, md: 24 }}>
-          <Container maxW="container.xl" px={{ base: 4, md: 6 }}>
+          <Container maxW="container.content" px={{ base: 4, md: 6 }}>
             <Text
               fontSize="xs"
               fontWeight="700"
@@ -432,7 +433,7 @@ export function LandingPage() {
           px={{ base: 4, md: 6 }}
           pb={{ base: 16, md: 20 }}
         >
-          <Container maxW="container.md" px={0}>
+          <Container maxW="672px" px={0}>
             <WaitlistForm />
           </Container>
         </Box>

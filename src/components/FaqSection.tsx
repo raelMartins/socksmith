@@ -140,7 +140,8 @@ export function FaqSection() {
 
   return (
     <Box as="section" id="faq" pt={{ base: 4, md: 8 }} pb={{ base: 16, md: 24 }}>
-      <Container maxW="container.md" px={{ base: 4, md: 6 }}>
+      <Container maxW="container.content" px={{ base: 4, md: 6 }}>
+        <Box maxW="720px" mx="auto">
         <VStack spacing={2} textAlign="center" mb={{ base: 8, md: 10 }}>
           <Text
             fontSize="xs"
@@ -175,6 +176,7 @@ export function FaqSection() {
             />
           ))}
         </VStack>
+        </Box>
       </Container>
     </Box>
   );

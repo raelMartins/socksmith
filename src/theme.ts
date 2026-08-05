@@ -13,6 +13,11 @@ const theme = extendTheme({
     heading: `var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif`,
     body: `var(--font-manrope), Manrope, system-ui, sans-serif`,
   },
+  sizes: {
+    container: {
+      content: "1104px",
+    },
+  },
   colors: {
     /** Named palette (exact brand hex). */
     socksmith: {

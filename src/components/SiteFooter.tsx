@@ -67,7 +67,7 @@ export function SiteFooter() {
       bg={footerBg}
       backdropFilter="blur(10px)"
     >
-      <Container maxW="container.xl" px={{ base: 4, md: 6 }} pt={{ base: 12, md: 16 }} pb={8}>
+      <Container maxW="container.content" px={{ base: 4, md: 6 }} pt={{ base: 12, md: 16 }} pb={8}>
         <SimpleGrid
           columns={{ base: 1, md: 3 }}
           spacing={{ base: 10, md: 8 }}
