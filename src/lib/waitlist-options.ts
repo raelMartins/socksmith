@@ -33,20 +33,50 @@ export type HearAboutOption = (typeof HEAR_ABOUT_OPTIONS)[number];
 export type ShoeSizeOption = (typeof SHOE_SIZE_OPTIONS)[number];
 export type DropFocusOption = (typeof DROP_FOCUS_OPTIONS)[number];
 
-/** Sock interests — multi-select on waitlist; stored as text[] on the row. */
+/** Sock style interests — multi-select pills on the waitlist form. */
 export const SOCK_INTEREST_OPTIONS = [
   "Corporate",
-  "Kid range",
+  "Minimal",
   "Sports",
-  "Gift bundle",
-  "Ankle sport",
-  "No-show",
+  "Ankle",
+  "Normal",
+] as const;
+
+/** Favourite colour swatches — multi-select on the waitlist form. */
+export const FAVOURITE_COLOUR_OPTIONS = [
+  { label: "Black", hex: "#111111" },
+  { label: "White", hex: "#FFFFFF" },
+  { label: "Milk white", hex: "#F3EEE6" },
+  { label: "Cream", hex: "#F5E6C8" },
+  { label: "Gray", hex: "#9CA3AF" },
+  { label: "Red", hex: "#E8170F" },
+  { label: "Wine", hex: "#7F1D1D" },
+  { label: "Pink", hex: "#F472B6" },
+  { label: "Neon", hex: "#A3E635" },
+  { label: "Orange", hex: "#F97316" },
+  { label: "Yellow", hex: "#FACC15" },
+  { label: "Khaki", hex: "#C4B28A" },
+  { label: "Green", hex: "#22C55E" },
+  { label: "Blue", hex: "#3B82F6" },
+  { label: "Navy blue", hex: "#1E3A8A" },
+  { label: "Purple", hex: "#8B5CF6" },
+] as const;
+
+/** Box quantity options for the waitlist dropdown. */
+export const BOX_QUANTITY_OPTIONS = [
+  "1 box (3 pairs)",
+  "2 boxes (6 pairs)",
+  "3 boxes (9 pairs)",
+  "4 boxes (12 pairs)",
 ] as const;
 
 /** Pipeline statuses (stored lowercase in DB). */
 export const WAITLIST_STATUSES = ["waiting", "contacted", "converted", "closed"] as const;
 
 export type SockInterestOption = (typeof SOCK_INTEREST_OPTIONS)[number];
+export type FavouriteColourOption =
+  (typeof FAVOURITE_COLOUR_OPTIONS)[number]["label"];
+export type BoxQuantityOption = (typeof BOX_QUANTITY_OPTIONS)[number];
 export type WaitlistStatus = (typeof WAITLIST_STATUSES)[number];
 
 const STATUS_LABEL: Record<WaitlistStatus, string> = {

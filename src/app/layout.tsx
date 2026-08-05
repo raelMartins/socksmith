@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fraunces } from "next/font/google";
+import { Manrope, Space_Grotesk } from "next/font/google";
 import { ColorMode } from "./color-mode";
 import { Providers } from "./providers";
 
-const fraunces = Fraunces({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-space-grotesk",
+  // Space Grotesk ships 300–700 only — no 800/900 faces
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-dm-sans",
+  variable: "--font-manrope",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -30,11 +33,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${spaceGrotesk.variable} ${manrope.variable}`}
+    >
       <head>
         <ColorMode />
       </head>
-      <body className={`${fraunces.variable} ${dmSans.variable}`}>
+      <body className={manrope.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

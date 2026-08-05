@@ -3,15 +3,15 @@ import type { StyleFunctionProps } from "@chakra-ui/styled-system";
 import { BRAND } from "@/lib/brand";
 
 const config: ThemeConfig = {
-  initialColorMode: "system",
-  useSystemColorMode: true,
+  initialColorMode: "light",
+  useSystemColorMode: false,
 };
 
 const theme = extendTheme({
   config,
   fonts: {
-    heading: `var(--font-fraunces), Georgia, serif`,
-    body: `var(--font-dm-sans), system-ui, sans-serif`,
+    heading: `var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif`,
+    body: `var(--font-manrope), Manrope, system-ui, sans-serif`,
   },
   colors: {
     /** Named palette (exact brand hex). */
@@ -74,14 +74,18 @@ const theme = extendTheme({
         bg: props.colorMode === "dark" ? BRAND.black : BRAND.cream,
         backgroundImage:
           props.colorMode === "dark"
-            ? `radial-gradient(ellipse 90% 70% at 15% -5%, rgba(26,86,219,0.22), transparent 52%),
-               radial-gradient(ellipse 70% 55% at 100% 0%, rgba(232,23,15,0.14), transparent 48%),
-               radial-gradient(ellipse 60% 50% at 50% 100%, rgba(15,76,117,0.28), transparent 55%)`
-            : `radial-gradient(ellipse 110% 85% at 0% 0%, rgba(26,86,219,0.07), transparent 52%),
-               radial-gradient(ellipse 90% 70% at 100% -5%, rgba(244,114,182,0.1), transparent 48%),
-               radial-gradient(ellipse 80% 55% at 50% 100%, rgba(15,76,117,0.06), transparent 52%)`,
+            ? `radial-gradient(ellipse 80% 60% at 0% 0%, rgba(244,114,182,0.18), transparent 55%),
+               radial-gradient(ellipse 70% 50% at 100% 0%, rgba(251,191,36,0.12), transparent 50%),
+               radial-gradient(ellipse 60% 45% at 50% 100%, rgba(26,86,219,0.16), transparent 55%)`
+            : `radial-gradient(ellipse 70% 55% at 0% 0%, rgba(244,114,182,0.28), transparent 55%),
+               radial-gradient(ellipse 65% 50% at 100% 0%, rgba(251,191,36,0.22), transparent 52%),
+               radial-gradient(ellipse 50% 40% at 50% 100%, rgba(251,191,36,0.08), transparent 60%)`,
+        backgroundAttachment: "fixed",
         color: props.colorMode === "dark" ? "socksmith.cream" : "ink.900",
         minH: "100vh",
+      },
+      html: {
+        scrollBehavior: "smooth",
       },
     }),
   },
@@ -147,6 +151,12 @@ const theme = extendTheme({
     },
     Button: {
       baseStyle: { fontWeight: "600", borderRadius: "xl" },
+    },
+    Heading: {
+      baseStyle: {
+        fontFamily: "heading",
+        fontWeight: "700",
+      },
     },
     Input: {
       variants: {

@@ -2,7 +2,7 @@
 export const BRAND = {
   red: "#E8170F",
   redLight: "#FADADD",
-  cream: "#F5EFE6",
+  cream: "#FAF7F2",
   brown: "#5C3A1E",
   pink: "#F472B6",
   pinkDark: "#EC4899",
