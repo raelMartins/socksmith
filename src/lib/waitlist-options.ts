@@ -36,10 +36,10 @@ export type DropFocusOption = (typeof DROP_FOCUS_OPTIONS)[number];
 /** Sock style interests — multi-select pills on the waitlist form. */
 export const SOCK_INTEREST_OPTIONS = [
   "Corporate",
-  "Minimal",
+  "Plain",
   "Sports",
-  "Ankle",
-  "Normal",
+  "Ankle-Length",
+  "Normal-Length",
 ] as const;
 
 /** Favourite colour swatches — multi-select on the waitlist form. */
