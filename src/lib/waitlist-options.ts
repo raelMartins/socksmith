@@ -39,7 +39,8 @@ export const SOCK_INTEREST_OPTIONS = [
   "Plain",
   "Sports",
   "Ankle-Length",
-  "Normal-Length",
+  "Minimal-Length",
+  "Casual",
 ] as const;
 
 /** Favourite colour swatches — multi-select on the waitlist form. */
