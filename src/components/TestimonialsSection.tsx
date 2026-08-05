@@ -122,7 +122,6 @@ export function TestimonialsSection() {
     "0 18px 40px rgba(28, 25, 23, 0.1)",
     "0 18px 40px rgba(0, 0, 0, 0.4)",
   );
-  const featureCaption = useColorModeValue("#3D2614", "white");
 
   return (
     <Box as="section" pt={{ base: 4, md: 8 }} pb={{ base: 16, md: 24 }}>
@@ -159,7 +158,7 @@ export function TestimonialsSection() {
 
         <SimpleGrid
           columns={{ base: 1, md: 2 }}
-          spacing={{ base: 4, md: 5 }}
+          spacing="16px"
           mt="64px"
           justifyItems="center"
         >
@@ -173,6 +172,7 @@ export function TestimonialsSection() {
               borderRadius="32px"
               overflow="hidden"
               boxShadow={featureShadow}
+              role="group"
             >
               <Image
                 src={feature.src}
@@ -182,21 +182,29 @@ export function TestimonialsSection() {
                 style={{ objectFit: "cover" }}
               />
               {feature.caption ? (
-                <Text
+                <Flex
                   position="absolute"
-                  bottom={{ base: 5, md: 7 }}
-                  {...(feature.captionPlacement === "end"
-                    ? { right: { base: 5, md: 7 }, left: { base: 5, md: "40%" } }
-                    : { left: { base: 5, md: 7 }, right: { base: 5, md: "30%" } })}
-                  color={featureCaption}
-                  fontWeight="700"
-                  fontSize={{ base: "xl", md: "2xl" }}
-                  lineHeight="short"
-                  letterSpacing="-0.03em"
-                  textShadow="0 1px 14px rgba(250, 247, 242, 0.75)"
+                  inset={0}
+                  align="center"
+                  justify="center"
+                  px={6}
+                  bg="rgba(0, 0, 0, 0.55)"
+                  opacity={0}
+                  transition="opacity 0.28s ease"
+                  _groupHover={{ opacity: 1 }}
+                  pointerEvents="none"
                 >
-                  {feature.caption}
-                </Text>
+                  <Text
+                    color="white"
+                    fontWeight="700"
+                    fontSize={{ base: "xl", md: "2xl" }}
+                    lineHeight="short"
+                    letterSpacing="-0.03em"
+                    textAlign="center"
+                  >
+                    {feature.caption}
+                  </Text>
+                </Flex>
               ) : null}
             </Box>
           ))}

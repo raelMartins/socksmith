@@ -81,6 +81,7 @@ function LookbookCardItem({
       borderRadius="24px"
       overflow="hidden"
       boxShadow={cardShadow}
+      role="group"
     >
       <Image
         src={card.src}
@@ -89,39 +90,46 @@ function LookbookCardItem({
         sizes="(max-width: 768px) 280px, 320px"
         style={{ objectFit: "cover" }}
       />
-      <Box
-        position="absolute"
-        inset={0}
-        bgGradient="linear(to-t, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.35) 32%, transparent 62%)"
-        pointerEvents="none"
-      />
       {card.brandMark ? (
         <Text
           position="absolute"
           top={4}
           right={4}
+          zIndex={1}
           color="whiteAlpha.900"
           fontSize="xs"
           fontWeight="600"
           letterSpacing="-0.02em"
           opacity={0.9}
+          transition="opacity 0.28s ease"
+          _groupHover={{ opacity: 0 }}
         >
           socks. smith
         </Text>
       ) : null}
-      <Text
+      <Flex
         position="absolute"
-        bottom={5}
-        left={5}
-        right={5}
-        color="white"
-        fontWeight="700"
-        fontSize={{ base: "md", md: "lg" }}
-        lineHeight="short"
-        letterSpacing="-0.025em"
+        inset={0}
+        align="center"
+        justify="center"
+        px={5}
+        bg="rgba(0, 0, 0, 0.55)"
+        opacity={0}
+        transition="opacity 0.28s ease"
+        _groupHover={{ opacity: 1 }}
+        pointerEvents="none"
       >
-        {card.caption}
-      </Text>
+        <Text
+          color="white"
+          fontWeight="700"
+          fontSize={{ base: "md", md: "lg" }}
+          lineHeight="short"
+          letterSpacing="-0.025em"
+          textAlign="center"
+        >
+          {card.caption}
+        </Text>
+      </Flex>
     </Box>
   );
 }

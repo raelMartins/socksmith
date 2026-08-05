@@ -131,7 +131,7 @@ function HeroFloatCard({
           delay: float.delay,
         }}
       >
-        <Box position="relative" w="full" h="full">
+        <Box position="relative" w="full" h="full" role="group">
           <Image
             src={src}
             alt={alt}
@@ -140,25 +140,29 @@ function HeroFloatCard({
             style={{ objectFit: "cover" }}
             priority
           />
-          <Box
+          <Flex
             position="absolute"
             inset={0}
-            bgGradient="linear(to-t, blackAlpha.700 0%, transparent 55%)"
+            align="center"
+            justify="center"
+            px={4}
+            bg="rgba(0, 0, 0, 0.55)"
+            opacity={0}
+            transition="opacity 0.28s ease"
+            _groupHover={{ opacity: 1 }}
             pointerEvents="none"
-          />
-          <Text
-            position="absolute"
-            bottom={{ base: 3, md: 4 }}
-            left={{ base: 3, md: 4 }}
-            right={{ base: 3, md: 4 }}
-            color="white"
-            fontWeight="700"
-            fontSize={{ base: "xs", sm: "sm", md: "md" }}
-            lineHeight="short"
-            letterSpacing="-0.02em"
           >
-            {caption}
-          </Text>
+            <Text
+              color="white"
+              fontWeight="700"
+              fontSize={{ base: "xs", sm: "sm", md: "md" }}
+              lineHeight="short"
+              letterSpacing="-0.02em"
+              textAlign="center"
+            >
+              {caption}
+            </Text>
+          </Flex>
         </Box>
       </MotionBox>
     </Box>
