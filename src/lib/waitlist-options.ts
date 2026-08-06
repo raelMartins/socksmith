@@ -39,7 +39,7 @@ export const SOCK_INTEREST_OPTIONS = [
   "Plain",
   "Sports",
   "Ankle-Length",
-  "Minimal-Length",
+  "Regular-Length",
   "Casual",
 ] as const;
 
